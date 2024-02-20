@@ -13,6 +13,7 @@ services:
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
+    command: ['/usr/wait-for-it.sh', 'mysql:3306', '--', 'npm', 'start']
 
   mysql:
     container_name: mysql
