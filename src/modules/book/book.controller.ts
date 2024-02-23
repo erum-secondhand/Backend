@@ -9,6 +9,7 @@ import {
   UseInterceptors,
   Logger,
   Param,
+  Query,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Response, Express } from 'express';
@@ -59,5 +60,11 @@ export class BookController {
     this.logger.log(`Fetching book with ID ${id}`);
     const book = await this.bookService.getBookDetail(id);
     res.status(HttpStatus.OK).json(book);
+  }
+
+  @Get('/search')
+  async searchBooks(@Query('title') title: string, @Res() res: Response) {
+    const books = await this.bookService.searchBooksByTitle(title);
+    res.status(HttpStatus.OK).json(books);
   }
 }

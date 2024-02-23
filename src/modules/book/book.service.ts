@@ -40,4 +40,13 @@ export class BookService {
     }
     return book;
   }
+
+  async searchBooksByTitle(title: string): Promise<BookOverViewDto[]> {
+    const books = await this.bookRepository
+      .createQueryBuilder('book')
+      .where('book.title LIKE :title', { title: `%${title}%` })
+      .getMany();
+
+    return books.map((book) => this.bookMapper.EntityToOverViewDto(book));
+  }
 }
