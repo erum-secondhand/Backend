@@ -1,0 +1,4 @@
+export enum ErrorCode {
+  USER_EMAIL_ALREADY_EXIST = 'U001',
+  USER_STUDENTID_ALREADY_EXIST = 'U002',
+}
