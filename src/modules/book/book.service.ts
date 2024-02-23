@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { BookDto } from './dto/book.dto';
@@ -27,8 +27,11 @@ export class BookService {
     return this.bookRepository.save(newBookEntity);
   }
 
-  async findDetailBooks(): Promise<BookDto[]> {
-    const books = this.bookRepository.find();
-    return (await books).map((book) => this.bookMapper.EntityToDto(book));
+  async getBookDetail(id: number): Promise<Book> {
+    const book = await this.bookRepository.findOne({ where: { id } });
+    if (!book) {
+      throw new NotFoundException(`Book with ID ${id} not found`);
+    }
+    return book;
   }
 }

@@ -8,6 +8,7 @@ import {
   UploadedFile,
   UseInterceptors,
   Logger,
+  Param,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Response, Express } from 'express';
@@ -47,10 +48,10 @@ export class BookController {
     }
   }
 
-  @Get('/detail')
-  async getDetailBooks(@Res() res: Response) {
-    this.logger.log('Fetching all books');
-    const books = await this.bookService.findDetailBooks();
-    res.status(HttpStatus.OK).json(books);
+  @Get('/detail/:id')
+  async getDetailBooks(@Param('id') id: number, @Res() res: Response) {
+    this.logger.log(`Fetching book with ID ${id}`);
+    const book = await this.bookService.getBookDetail(id);
+    res.status(HttpStatus.OK).json(book);
   }
 }
