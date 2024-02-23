@@ -47,8 +47,8 @@ export class BookController {
     }
   }
 
-  @Get()
-  async getAllBooks(@Res() res: Response) {
+  @Get('/detail')
+  async getDetailBooks(@Res() res: Response) {
     this.logger.log('Fetching all books');
     const books = await this.bookService.findAllBooks();
     res.status(HttpStatus.OK).json(books);
