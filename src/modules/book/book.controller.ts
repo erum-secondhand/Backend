@@ -50,7 +50,7 @@ export class BookController {
   @Get('/detail')
   async getDetailBooks(@Res() res: Response) {
     this.logger.log('Fetching all books');
-    const books = await this.bookService.findAllBooks();
+    const books = await this.bookService.findDetailBooks();
     res.status(HttpStatus.OK).json(books);
   }
 }

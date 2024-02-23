@@ -27,7 +27,7 @@ export class BookService {
     return this.bookRepository.save(newBookEntity);
   }
 
-  async findAllBooks(): Promise<BookDto[]> {
+  async findDetailBooks(): Promise<BookDto[]> {
     const books = this.bookRepository.find();
     return (await books).map((book) => this.bookMapper.EntityToDto(book));
   }
