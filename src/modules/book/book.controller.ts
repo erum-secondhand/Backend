@@ -3,6 +3,7 @@ import {
   Controller,
   HttpStatus,
   Post,
+  Get,
   Res,
   UploadedFile,
   UseInterceptors,
@@ -10,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Response, Express } from 'express';
-import { CreateBookDto } from './dto/create-book.dto';
+import { BookDto } from './dto/book.dto';
 import { BookService } from './book.service';
 import { BookMapper } from './mapper/book.mapper';
 
@@ -26,7 +27,7 @@ export class BookController {
   @Post()
   @UseInterceptors(FileInterceptor('image'))
   async createBook(
-    @Body() createBookDto: CreateBookDto,
+    @Body() createBookDto: BookDto,
     @UploadedFile() image: Express.Multer.File,
     @Res() res: Response,
   ): Promise<void> {
@@ -44,5 +45,12 @@ export class BookController {
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
         .json({ error: error.message });
     }
+  }
+
+  @Get()
+  async getAllBooks(@Res() res: Response) {
+    this.logger.log('Fetching all books');
+    const books = await this.bookService.findAllBooks();
+    res.status(HttpStatus.OK).json(books);
   }
 }

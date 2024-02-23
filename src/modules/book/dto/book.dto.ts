@@ -1,4 +1,4 @@
-export class CreateBookDto {
+export class BookDto {
   id: number;
   imageUrl: string;
   title: string;
@@ -8,4 +8,5 @@ export class CreateBookDto {
   description: string;
   condition: string;
   kakaoLink: string;
+  createAt: Date;
 }
