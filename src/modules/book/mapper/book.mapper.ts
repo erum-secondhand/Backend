@@ -1,5 +1,6 @@
 import { BookDto } from '../dto/book.dto';
 import { Book } from '../entity/book.entity';
+import { BookOverViewDto } from '../dto/book-overview.dto';
 
 export class BookMapper {
   DtoToEntity(dto: BookDto): Book {
@@ -28,6 +29,16 @@ export class BookMapper {
       condition: book.condition,
       kakaoLink: book.kakaoLink,
       createAt: book.createAt,
+    };
+  }
+
+  EntityToOverViewDto(book: Book): BookOverViewDto {
+    return {
+      id: book.id,
+      imageUrl: book.imageUrl,
+      title: book.title,
+      publisher: book.publisher,
+      price: book.price,
     };
   }
 }

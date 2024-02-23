@@ -5,6 +5,7 @@ import { BookDto } from './dto/book.dto';
 import { BookMapper } from './mapper/book.mapper';
 import { Book } from './entity/book.entity';
 import { S3Service } from '../../config/s3/s3.service';
+import { BookOverViewDto } from './dto/book-overview.dto';
 
 @Injectable()
 export class BookService {
@@ -25,6 +26,11 @@ export class BookService {
     const imageUrl = await this.s3Service.uploadImage(image);
     newBookEntity.imageUrl = imageUrl;
     return this.bookRepository.save(newBookEntity);
+  }
+
+  async getAllBooks(): Promise<BookOverViewDto[]> {
+    const books = await this.bookRepository.find();
+    return books.map((book) => this.bookMapper.EntityToOverViewDto(book));
   }
 
   async getBookDetail(id: number): Promise<Book> {

@@ -48,6 +48,12 @@ export class BookController {
     }
   }
 
+  @Get()
+  async getAllBooks(@Res() res: Response) {
+    const books = await this.bookService.getAllBooks();
+    res.status(HttpStatus.OK).json(books);
+  }
+
   @Get('/detail/:id')
   async getDetailBooks(@Param('id') id: number, @Res() res: Response) {
     this.logger.log(`Fetching book with ID ${id}`);
