@@ -7,6 +7,10 @@ import { UserRegisterRequestDto } from './dto/user-register-request.dto';
 import { UserMapper } from './mapper/user.mapper';
 import { EmailAlreadyExistsException } from './userException/EmailAlreadyExistsException';
 import { StudentIDAlreadyExistsException } from './userException/StudentIDAlreadyExistsException';
+import { UserLoginRequestDto } from './dto/user-login-request.dto';
+import { UserLoginResponseDto } from './dto/user-login-response.dto';
+import { NotFoundUserException } from './userException/NotFoundUserException';
+import { LoginInvalidPasswordException } from './userException/LoginInvalidPasswordException';
 
 @Injectable()
 export class UserService {
@@ -44,5 +48,27 @@ export class UserService {
 
     const newUserEntity = this.userMapper.DtoToEntity(userRegisterRequestDto);
     return await this.userRepository.save(newUserEntity);
+  }
+
+  async loginUser(
+    userLoginRequestDto: UserLoginRequestDto,
+  ): Promise<UserLoginResponseDto> {
+    const user = await this.userRepository.findOne({
+      where: { email: userLoginRequestDto.email },
+    });
+    if (!user) {
+      throw new NotFoundUserException();
+    }
+
+    const { password } = userLoginRequestDto;
+    if (user && (await bcrypt.compare(password, user.password))) {
+      const response: UserLoginResponseDto = {
+        id: user.id,
+        message: `${user.name}님 안녕하세요!`,
+      };
+      return response;
+    } else {
+      throw new LoginInvalidPasswordException();
+    }
   }
 }
