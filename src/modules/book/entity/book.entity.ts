@@ -6,8 +6,16 @@ export class Book extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  imageUrl: string;
+  @Column({ type: 'varchar' })
+  imageUrls: string;
+
+  get imageUrlsArray(): string[] {
+    return JSON.parse(this.imageUrls);
+  }
+
+  set imageUrlsArray(urls: string[]) {
+    this.imageUrls = JSON.stringify(urls);
+  }
 
   @Column()
   title: string;

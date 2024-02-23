@@ -6,7 +6,7 @@ export class BookMapper {
   DtoToEntity(dto: BookDto): Book {
     const book = new Book();
 
-    book.imageUrl = dto.imageUrl;
+    book.imageUrlsArray = dto.imageUrls;
     book.title = dto.title;
     book.publisher = dto.publisher;
     book.grade = dto.grade;
@@ -20,7 +20,7 @@ export class BookMapper {
   EntityToDto(book: Book): BookDto {
     return {
       id: book.id,
-      imageUrl: book.imageUrl,
+      imageUrls: book.imageUrlsArray,
       title: book.title,
       publisher: book.publisher,
       grade: book.grade,
@@ -35,7 +35,7 @@ export class BookMapper {
   EntityToOverViewDto(book: Book): BookOverViewDto {
     return {
       id: book.id,
-      imageUrl: book.imageUrl,
+      imageUrls: book.imageUrlsArray,
       title: book.title,
       publisher: book.publisher,
       price: book.price,

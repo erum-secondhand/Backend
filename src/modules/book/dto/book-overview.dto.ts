@@ -1,6 +1,6 @@
 export class BookOverViewDto {
   id: number;
-  imageUrl: string;
+  imageUrls: string[];
   title: string;
   publisher: string;
   price: number;

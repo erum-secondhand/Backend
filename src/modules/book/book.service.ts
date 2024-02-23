@@ -20,11 +20,13 @@ export class BookService {
 
   async createBook(
     createBookDto: BookDto,
-    image: Express.Multer.File,
+    images: Express.Multer.File[],
   ): Promise<Book> {
     const newBookEntity = this.bookMapper.DtoToEntity(createBookDto);
-    const imageUrl = await this.s3Service.uploadImage(image);
-    newBookEntity.imageUrl = imageUrl;
+    const imageUrls = await Promise.all(
+      images.map((image) => this.s3Service.uploadImage(image)),
+    );
+    newBookEntity.imageUrlsArray = imageUrls;
     return this.bookRepository.save(newBookEntity);
   }
 

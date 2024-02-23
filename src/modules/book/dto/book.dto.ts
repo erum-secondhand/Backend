@@ -1,6 +1,6 @@
 export class BookDto {
   id: number;
-  imageUrl: string;
+  imageUrls: string[];
   title: string;
   publisher: string;
   grade: string;
