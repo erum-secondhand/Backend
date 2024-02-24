@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as crypto from 'crypto';
 import * as nodemailer from 'nodemailer';
+import * as fs from 'fs';
+import * as path from 'path';
 
 @Injectable()
 export class AuthService {
@@ -34,11 +36,40 @@ export class AuthService {
       },
     });
 
+    const htmlContent = `
+      <html>
+        <head>
+          <style>
+            body {
+              text-align: center;
+              font-family: 'Arial', sans-serif;
+              color: black;
+            }
+            .code {
+              font-size: 24px;
+              color: black;
+              border: 1px solid #ddd;
+              padding: 10px;
+              display: inline-block;
+              margin: 10px 0;
+              background-color: #f9f9f9;
+            }
+          </style>
+        </head>
+        <body>
+          <p>안녕하세요! 컴퓨터공학부 학생회 이룸 이메일 인증 서비스입니다 🌟</p>
+          <p>귀하의 이메일 인증 코드는 다음과 같습니다:</p>
+          <div class="code">${code}</div>
+          <p>이 코드는 5분간 유효합니다.</p>
+        </body>
+      </html>
+    `;
+
     const mailOptions = {
       from: this.configService.get<string>('EMAIL_USER'),
       to: email,
-      subject: 'Email Verification Code',
-      text: `Your verification code is: ${code}`,
+      subject: '📚 전공서적 중고마켓 이용을 위한 이메일 인증 서비스 📚',
+      html: htmlContent,
     };
 
     await transporter.sendMail(mailOptions);
