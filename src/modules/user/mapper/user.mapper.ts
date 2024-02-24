@@ -25,6 +25,7 @@ export class UserMapper {
 
   EntityToDto(user: User): UserRegisterResponseDto {
     return {
+      id: user.id,
       email: user.email,
       name: user.name,
       studentId: user.studentId,

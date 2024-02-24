@@ -1,33 +1,55 @@
 import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
 import { Response } from 'express';
 import { UserService } from './user.service';
 import { UserRegisterRequestDto } from './dto/user-register-request.dto';
-import { UserMapper } from './mapper/user.mapper';
 import { UserLoginRequestDto } from './dto/user-login-request.dto';
+import { AuthService } from './auth/auth.service';
 
 @Controller('users')
 export class UserController {
   constructor(
     private readonly userService: UserService,
-    private readonly userMapper: UserMapper,
+    private readonly authService: AuthService,
   ) {}
+
+  @Post('/verify')
+  async sendVerificationCode(
+    @Body('email') email: string,
+    @Res() res: Response,
+  ) {
+    await this.authService.generateVerificationCode(email);
+    res.status(HttpStatus.OK).json({ message: 'Verification code sent' });
+  }
 
   @Post('/register')
   async registerUser(
     @Body() registerUserRequestDto: UserRegisterRequestDto,
+    @Body('verificationCode') verificationCode: string,
     @Res() res: Response,
-  ): Promise<void> {
-    const newUser = await this.userService.registerUser(registerUserRequestDto);
-    const response = this.userMapper.EntityToDto(newUser);
-    res.status(HttpStatus.CREATED).json(response);
+  ) {
+    if (
+      !(await this.authService.verifyEmailCode(
+        registerUserRequestDto.email,
+        verificationCode,
+      ))
+    ) {
+      throw new BadRequestException('Invalid or expired verification code.');
+    }
+
+    const newUser = await this.userService.registerUser(
+      registerUserRequestDto,
+      verificationCode,
+    );
+    res.status(HttpStatus.CREATED).json(newUser);
   }
 
   @Post('/login')
   async loginUser(
     @Body() userLoginRequestDto: UserLoginRequestDto,
     @Res() res: Response,
-  ): Promise<void> {
+  ) {
     const response = await this.userService.loginUser(userLoginRequestDto);
-    res.status(HttpStatus.OK).send(response);
+    res.status(HttpStatus.OK).json(response);
   }
 }
