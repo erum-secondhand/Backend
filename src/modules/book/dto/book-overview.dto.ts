@@ -3,5 +3,5 @@ export class BookOverViewDto {
   imageUrls: string[];
   title: string;
   publisher: string;
-  price: number;
+  price: string;
 }

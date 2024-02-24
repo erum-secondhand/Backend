@@ -4,7 +4,7 @@ export class BookDto {
   title: string;
   publisher: string;
   grade: string;
-  price: number;
+  price: string;
   description: string;
   condition: string;
   kakaoLink: string;

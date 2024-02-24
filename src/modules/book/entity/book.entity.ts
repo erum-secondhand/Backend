@@ -27,7 +27,7 @@ export class Book extends BaseEntity {
   grade: string;
 
   @Column()
-  price: number;
+  price: string;
 
   @Column()
   description: string;
