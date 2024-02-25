@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, Session } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcryptjs';
 import { User } from './entity/user.entity';
@@ -54,6 +54,7 @@ export class UserService {
 
   async loginUser(
     userLoginRequestDto: UserLoginRequestDto,
+    session: Record<string, any>,
   ): Promise<UserLoginResponseDto> {
     const { email, password } = userLoginRequestDto;
 
@@ -62,6 +63,9 @@ export class UserService {
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) throw new LoginInvalidPasswordException();
+
+    session.userId = user.id;
+    session.username = user.name;
 
     return { id: user.id, message: `${user.name}님 안녕하세요!` };
   }

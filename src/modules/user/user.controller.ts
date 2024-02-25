@@ -1,4 +1,11 @@
-import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpStatus,
+  Post,
+  Res,
+  Session,
+} from '@nestjs/common';
 import { BadRequestException } from '@nestjs/common';
 import { Response } from 'express';
 import { UserService } from './user.service';
@@ -47,9 +54,13 @@ export class UserController {
   @Post('/login')
   async loginUser(
     @Body() userLoginRequestDto: UserLoginRequestDto,
+    @Session() session: Record<string, any>, // 세션 객체 추가
     @Res() res: Response,
   ) {
-    const response = await this.userService.loginUser(userLoginRequestDto);
+    const response = await this.userService.loginUser(
+      userLoginRequestDto,
+      session,
+    );
     res.status(HttpStatus.OK).json(response);
   }
 }
