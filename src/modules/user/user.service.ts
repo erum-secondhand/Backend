@@ -69,4 +69,8 @@ export class UserService {
 
     return { id: user.id, message: `${user.name}님 안녕하세요!` };
   }
+
+  async findUserById(id: number): Promise<User | undefined> {
+    return this.userRepository.findOne({ where: { id } });
+  }
 }

@@ -3,6 +3,7 @@ import {
   Controller,
   HttpStatus,
   Post,
+  Get,
   Res,
   Session,
 } from '@nestjs/common';
@@ -62,6 +63,30 @@ export class UserController {
       session,
     );
     res.status(HttpStatus.OK).json(response);
+  }
+
+  @Get('/status')
+  async getLoginStatus(
+    @Session() session: Record<string, any>,
+    @Res() res: Response,
+  ) {
+    if (session.userId) {
+      const user = await this.userService.findUserById(session.userId);
+      if (user) {
+        return res.status(HttpStatus.OK).json({
+          isLoggedIn: true,
+          user: {
+            id: user.id,
+            email: user.email,
+            password: user.password,
+            name: user.name,
+            studentId: user.studentId,
+            major: user.major,
+          },
+        });
+      }
+    }
+    return res.status(HttpStatus.OK).json({ isLoggedIn: false });
   }
 
   @Post('/logout')
