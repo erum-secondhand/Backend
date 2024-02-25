@@ -56,4 +56,24 @@ export class BookService {
 
     return books.map((book) => this.bookMapper.EntityToOverViewDto(book));
   }
+
+  async filterBooks(
+    grade?: string,
+    description?: string,
+  ): Promise<BookOverViewDto[]> {
+    const queryBuilder = this.bookRepository.createQueryBuilder('book');
+
+    if (grade) {
+      queryBuilder.andWhere('book.grade = :grade', { grade });
+    }
+
+    if (description) {
+      queryBuilder.andWhere('book.description = :description', { description });
+    }
+
+    queryBuilder.orderBy('book.createAt', 'DESC');
+
+    const books = await queryBuilder.getMany();
+    return books.map((book) => this.bookMapper.EntityToOverViewDto(book));
+  }
 }

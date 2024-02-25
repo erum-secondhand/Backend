@@ -61,4 +61,17 @@ export class BookController {
     const books = await this.bookService.searchBooksByTitle(title);
     res.status(HttpStatus.OK).json(books);
   }
+
+  @Get('/filter')
+  async filterBooks(
+    @Query('grade') grade: string,
+    @Query('description') description: string,
+    @Res() res: Response,
+  ) {
+    const filteredBooks = await this.bookService.filterBooks(
+      grade,
+      description,
+    );
+    res.status(HttpStatus.OK).json(filteredBooks);
+  }
 }
