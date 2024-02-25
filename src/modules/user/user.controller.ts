@@ -54,7 +54,7 @@ export class UserController {
   @Post('/login')
   async loginUser(
     @Body() userLoginRequestDto: UserLoginRequestDto,
-    @Session() session: Record<string, any>, // 세션 객체 추가
+    @Session() session: Record<string, any>,
     @Res() res: Response,
   ) {
     const response = await this.userService.loginUser(
@@ -62,5 +62,21 @@ export class UserController {
       session,
     );
     res.status(HttpStatus.OK).json(response);
+  }
+
+  @Post('/logout')
+  async logoutUser(
+    @Session() session: Record<string, any>,
+    @Res() res: Response,
+  ) {
+    const name = session.username;
+    session.destroy((err) => {
+      if (err) {
+        return res
+          .status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .json({ message: 'Logout failed' });
+      }
+      res.status(HttpStatus.OK).json({ message: `${name}님 안녕히가세요!` });
+    });
   }
 }
