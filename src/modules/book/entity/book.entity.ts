@@ -6,7 +6,7 @@ export class Book extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 500 })
+  @Column({ type: 'varchar', length: 1000 })
   imageUrls: string;
 
   get imageUrlsArray(): string[] {
@@ -29,7 +29,7 @@ export class Book extends BaseEntity {
   @Column()
   price: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 1000 })
   description: string;
 
   @Column()
