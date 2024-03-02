@@ -16,4 +16,4 @@ COPY . .
 
 EXPOSE 8080
 
-CMD ["nodemon", "src/main.ts"]
+CMD ["nodemon", "--exec", "node --max-old-space-size=4096", "src/main.ts"]
