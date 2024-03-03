@@ -62,7 +62,7 @@ export class BookService {
     grade?: string,
     description?: string,
   ): Promise<BookOverViewDto[]> {
-    const queryBuilder = this.bookRepository.createQueryBuilder('book');
+    const queryBuilder = this.bookRepository.createQueryBuilder('book').where('book.salesStatus = :status', { status: '판매중' });
 
     if (grade) {
       queryBuilder.andWhere('book.grade = :grade', { grade });
