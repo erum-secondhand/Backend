@@ -33,9 +33,8 @@ export class BookService {
 
   async getAllBooks(): Promise<BookOverViewDto[]> {
     const books = await this.bookRepository.find({
-      order: {
-        createAt: 'DESC',
-      },
+      where: { salesStatus: '판매중' },
+      order: { createAt: 'DESC' },
     });
     return books.map((book) => this.bookMapper.EntityToOverViewDto(book));
   }
