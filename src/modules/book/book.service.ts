@@ -109,4 +109,21 @@ export class BookService {
     const updatedBook = await this.bookRepository.save(book);
     return this.bookMapper.EntityToDto(updatedBook);
   }
+
+  async getBooksByUser(userId: number): Promise<{
+    onSaleBooks: { books: Book[] };
+    soldOutBooks: { books: Book[] };
+  }> {
+    const books = await this.bookRepository.find({ where: { userId: userId } });
+
+    const onSaleBooks = books.filter((book) => book.salesStatus === '판매중');
+    const soldOutBooks = books.filter(
+      (book) => book.salesStatus === '판매완료',
+    );
+
+    return {
+      onSaleBooks: { books: onSaleBooks },
+      soldOutBooks: { books: soldOutBooks },
+    };
+  }
 }

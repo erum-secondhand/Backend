@@ -1,5 +1,12 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { BaseEntity } from '../../../global/common/base.entity';
+import { User } from '../../user/entity/user.entity';
 
 @Entity()
 export class Book extends BaseEntity {
@@ -40,4 +47,11 @@ export class Book extends BaseEntity {
 
   @Column()
   salesStatus: string;
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'user_id' })
+  user: User;
+
+  @Column({ nullable: false })
+  userId: number;
 }

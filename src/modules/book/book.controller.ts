@@ -97,4 +97,16 @@ export class BookController {
         .json({ error: error.message });
     }
   }
+
+  @Get('/:userId')
+  async getBooksByUser(@Param('userId') userId: number, @Res() res: Response) {
+    try {
+      const books = await this.bookService.getBooksByUser(userId);
+      res.status(HttpStatus.OK).json(books);
+    } catch (error) {
+      res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json({ error: error.message });
+    }
+  }
 }
