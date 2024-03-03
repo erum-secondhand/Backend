@@ -7,7 +7,6 @@ import { UserRegisterResponseDto } from '../dto/user-register-response.dto';
 export class UserMapper {
   DtoToEntity({
     email,
-    password,
     name,
     studentId,
     major,
@@ -15,7 +14,6 @@ export class UserMapper {
     const user = new User();
 
     user.email = email;
-    user.password = password;
     user.name = name;
     user.studentId = studentId;
     user.major = major;

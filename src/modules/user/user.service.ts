@@ -12,6 +12,7 @@ import { UserLoginRequestDto } from './dto/user-login-request.dto';
 import { UserLoginResponseDto } from './dto/user-login-response.dto';
 import { NotFoundUserException } from './userException/NotFoundUserException';
 import { LoginInvalidPasswordException } from './userException/LoginInvalidPasswordException';
+import { UserRegisterResponseDto } from './dto/user-register-response.dto';
 
 @Injectable()
 export class UserService {
@@ -27,7 +28,7 @@ export class UserService {
   async registerUser(
     userRegisterRequestDto: UserRegisterRequestDto,
     verificationCode: string,
-  ): Promise<User> {
+  ): Promise<UserRegisterResponseDto> {
     const { email, studentId, password } = userRegisterRequestDto;
 
     const isEmailExist = await this.userRepository.findOne({
@@ -46,10 +47,13 @@ export class UserService {
 
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(password, salt);
-    userRegisterRequestDto.password = hashedPassword;
 
     const newUserEntity = this.userMapper.DtoToEntity(userRegisterRequestDto);
-    return await this.userRepository.save(newUserEntity);
+    newUserEntity.password = hashedPassword
+
+    const savedUser = await this.userRepository.save(newUserEntity);
+
+    return this.userMapper.EntityToDto(savedUser);
   }
 
   async loginUser(

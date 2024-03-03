@@ -78,7 +78,6 @@ export class UserController {
           user: {
             id: user.id,
             email: user.email,
-            password: user.password,
             name: user.name,
             studentId: user.studentId,
             major: user.major,
