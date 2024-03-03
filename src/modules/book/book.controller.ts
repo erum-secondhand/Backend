@@ -11,9 +11,10 @@ import {
   Logger,
   Param,
   Query,
+  Req,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { BookDto } from './dto/book.dto';
 import { BookService } from './book.service';
 import { BookMapper } from './mapper/book.mapper';
@@ -30,12 +31,14 @@ export class BookController {
   @Post()
   @UseInterceptors(FilesInterceptor('images'))
   async createBook(
+    @Req() req: Request,
     @Body() createBookDto: BookDto,
     @UploadedFiles() images: Express.Multer.File[],
     @Res() res: Response,
   ): Promise<void> {
     try {
-      const newBook = await this.bookService.createBook(createBookDto, images);
+      const userId = req.session.userId;
+      const newBook = await this.bookService.createBook(createBookDto, images, userId);
       const response = this.bookMapper.EntityToDto(newBook);
       res.status(HttpStatus.CREATED).json(response);
     } catch (error) {
@@ -66,12 +69,12 @@ export class BookController {
   @Get('/filter')
   async filterBooks(
     @Query('grade') grade: string,
-    @Query('description') description: string,
+    @Query('type') type: string,
     @Res() res: Response,
   ) {
     const filteredBooks = await this.bookService.filterBooks(
       grade,
-      description,
+      type,
     );
     res.status(HttpStatus.OK).json(filteredBooks);
   }

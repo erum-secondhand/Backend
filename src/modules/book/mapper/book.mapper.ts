@@ -12,6 +12,7 @@ export class BookMapper {
     book.grade = dto.grade;
     book.price = dto.price;
     book.description = dto.description;
+    book.type = dto.type;
     book.condition = dto.condition;
     book.kakaoLink = dto.kakaoLink;
     book.salesStatus = dto.salesStatus;
@@ -27,6 +28,7 @@ export class BookMapper {
       grade: book.grade,
       price: book.price,
       description: book.description,
+      type: book.type,
       condition: book.condition,
       kakaoLink: book.kakaoLink,
       salesStatus: book.salesStatus,

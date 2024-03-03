@@ -40,6 +40,9 @@ export class Book extends BaseEntity {
   description: string;
 
   @Column()
+  type: string;
+
+  @Column()
   condition: string;
 
   @Column()

@@ -21,6 +21,7 @@ export class BookService {
   async createBook(
     createBookDto: BookDto,
     images: Express.Multer.File[],
+    userId: number
   ): Promise<Book> {
     const newBookEntity = this.bookMapper.DtoToEntity(createBookDto);
     const imageUrls = await Promise.all(
@@ -28,6 +29,7 @@ export class BookService {
     );
     newBookEntity.imageUrlsArray = imageUrls;
     newBookEntity.salesStatus = '판매중';
+    newBookEntity.userId = userId;
     return this.bookRepository.save(newBookEntity);
   }
 

@@ -6,6 +6,7 @@ export class BookDto {
   grade: string;
   price: string;
   description: string;
+  type: string;
   condition: string;
   kakaoLink: string;
   salesStatus: string;
