@@ -1,7 +1,6 @@
 import { BookDto } from '../dto/book.dto';
 import { Book } from '../entity/book.entity';
 import { BookOverViewDto } from '../dto/book-overview.dto';
-import { SalesStatus } from '../entity/book.entity';
 
 export class BookMapper {
   DtoToEntity(dto: BookDto): Book {
@@ -15,7 +14,7 @@ export class BookMapper {
     book.description = dto.description;
     book.condition = dto.condition;
     book.kakaoLink = dto.kakaoLink;
-    book.salesStatus = dto.salesStatus ?? SalesStatus.ON_SALE;
+    book.salesStatus = dto.salesStatus;
     return book;
   }
 

@@ -1,5 +1,3 @@
-import { SalesStatus } from '../entity/book.entity';
-
 export class BookDto {
   id: number;
   imageUrls: string[];
@@ -10,6 +8,6 @@ export class BookDto {
   description: string;
   condition: string;
   kakaoLink: string;
-  salesStatus?: SalesStatus;
+  salesStatus: string;
   createAt: Date;
 }

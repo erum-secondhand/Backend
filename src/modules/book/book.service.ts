@@ -27,6 +27,7 @@ export class BookService {
       images.map((image) => this.s3Service.uploadImage(image)),
     );
     newBookEntity.imageUrlsArray = imageUrls;
+    newBookEntity.salesStatus = '판매중';
     return this.bookRepository.save(newBookEntity);
   }
 
