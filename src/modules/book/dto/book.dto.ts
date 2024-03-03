@@ -10,4 +10,6 @@ export class BookDto {
   kakaoLink: string;
   salesStatus: string;
   createAt: Date;
+  updateAt: Date;
+  deleteAt: Date;
 }

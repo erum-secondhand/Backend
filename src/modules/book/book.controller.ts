@@ -4,6 +4,7 @@ import {
   HttpStatus,
   Post,
   Get,
+  Put,
   Res,
   UploadedFiles,
   UseInterceptors,
@@ -73,5 +74,27 @@ export class BookController {
       description,
     );
     res.status(HttpStatus.OK).json(filteredBooks);
+  }
+
+  @Put(':id')
+  @UseInterceptors(FilesInterceptor('images'))
+  async updateBook(
+    @Param('id') id: number,
+    @Body() updateBookDto: BookDto,
+    @UploadedFiles() images: Express.Multer.File[],
+    @Res() res: Response,
+  ): Promise<void> {
+    try {
+      const updatedBook = await this.bookService.updateBook(
+        id,
+        updateBookDto,
+        images,
+      );
+      res.status(HttpStatus.OK).json(updatedBook);
+    } catch (error) {
+      res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json({ error: error.message });
+    }
   }
 }

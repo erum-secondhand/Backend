@@ -31,6 +31,8 @@ export class BookMapper {
       kakaoLink: book.kakaoLink,
       salesStatus: book.salesStatus,
       createAt: book.createAt,
+      updateAt: book.updateAt,
+      deleteAt: book.deleteAt,
     };
   }
 

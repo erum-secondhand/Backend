@@ -77,4 +77,36 @@ export class BookService {
     const books = await queryBuilder.getMany();
     return books.map((book) => this.bookMapper.EntityToOverViewDto(book));
   }
+
+  async updateBook(
+    id: number,
+    updateBookDto: BookDto,
+    images?: Express.Multer.File[],
+  ): Promise<BookDto> {
+    const book = await this.bookRepository.findOne({ where: { id } });
+    if (!book) {
+      throw new NotFoundException(`Book with ID ${id} not found`);
+    }
+
+    if (images && images.length > 0) {
+      const imageUrls = await Promise.all(
+        images.map((image) => this.s3Service.uploadImage(image)),
+      );
+      book.imageUrlsArray = imageUrls;
+    } else if (updateBookDto.imageUrls) {
+      book.imageUrlsArray = updateBookDto.imageUrls;
+    }
+
+    book.title = updateBookDto.title ?? book.title;
+    book.publisher = updateBookDto.publisher ?? book.publisher;
+    book.grade = updateBookDto.grade ?? book.grade;
+    book.price = updateBookDto.price ?? book.price;
+    book.description = updateBookDto.description ?? book.description;
+    book.condition = updateBookDto.condition ?? book.condition;
+    book.kakaoLink = updateBookDto.kakaoLink ?? book.kakaoLink;
+    book.salesStatus = updateBookDto.salesStatus ?? book.salesStatus;
+
+    const updatedBook = await this.bookRepository.save(book);
+    return this.bookMapper.EntityToDto(updatedBook);
+  }
 }
