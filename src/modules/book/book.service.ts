@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { BookDto } from './dto/book.dto';
@@ -54,7 +54,6 @@ export class BookService {
     };
   }
   
-
   async searchBooksByTitle(title: string): Promise<BookOverViewDto[]> {
     const books = await this.bookRepository
       .createQueryBuilder('book')
@@ -89,11 +88,17 @@ export class BookService {
   async updateBook(
     id: number,
     updateBookDto: BookDto,
-    images?: Express.Multer.File[],
+    currentUserId: number,
+    images?: Express.Multer.File[]
+
   ): Promise<BookDto> {
     const book = await this.bookRepository.findOne({ where: { id } });
     if (!book) {
       throw new NotFoundException(`Book with ID ${id} not found`);
+    }
+
+    if (book.userId !== currentUserId) {
+      throw new UnauthorizedException('You do not have permission to update this book');
     }
 
     if (images && images.length > 0) {
@@ -110,6 +115,7 @@ export class BookService {
     book.grade = updateBookDto.grade ?? book.grade;
     book.price = updateBookDto.price ?? book.price;
     book.description = updateBookDto.description ?? book.description;
+    book.type = updateBookDto.type ?? book.type;
     book.condition = updateBookDto.condition ?? book.condition;
     book.kakaoLink = updateBookDto.kakaoLink ?? book.kakaoLink;
     book.salesStatus = updateBookDto.salesStatus ?? book.salesStatus;

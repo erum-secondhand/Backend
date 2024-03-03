@@ -82,16 +82,19 @@ export class BookController {
   @Put(':id')
   @UseInterceptors(FilesInterceptor('images'))
   async updateBook(
+    @Req() req: Request,
     @Param('id') id: number,
     @Body() updateBookDto: BookDto,
     @UploadedFiles() images: Express.Multer.File[],
     @Res() res: Response,
   ): Promise<void> {
     try {
+      const userId = req.session.userId;
       const updatedBook = await this.bookService.updateBook(
         id,
         updateBookDto,
-        images,
+        userId,
+        images
       );
       res.status(HttpStatus.OK).json(updatedBook);
     } catch (error) {
