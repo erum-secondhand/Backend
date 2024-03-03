@@ -51,6 +51,7 @@ export class BookService {
     const books = await this.bookRepository
       .createQueryBuilder('book')
       .where('book.title LIKE :title', { title: `%${title}%` })
+      .andWhere('book.salesStatus = :status', { status: '판매중' })
       .orderBy('book.createAt', 'DESC')
       .getMany();
 
