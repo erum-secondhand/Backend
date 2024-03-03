@@ -22,8 +22,9 @@ async function bootstrap() {
     }),
   );
 
+  app.setGlobalPrefix('api/v1');
+
   await app.listen(8080);
-  Logger.log(`Server running on http://localhost:8080`, 'Bootstrap');
 }
 
 bootstrap();
