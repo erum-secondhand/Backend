@@ -41,13 +41,19 @@ export class BookService {
     return books.map((book) => this.bookMapper.EntityToOverViewDto(book));
   }
 
-  async getBookDetail(id: number): Promise<BookDto> {
+  async getBookDetail(id: number): Promise<{ bookDto: BookDto, userId: number }> {
     const book = await this.bookRepository.findOne({ where: { id } });
     if (!book) {
       throw new NotFoundException(`Book with ID ${id} not found`);
     }
-    return this.bookMapper.EntityToDto(book);
+  
+    const bookDto = this.bookMapper.EntityToDto(book);
+    return {
+      bookDto,
+      userId: book.userId
+    };
   }
+  
 
   async searchBooksByTitle(title: string): Promise<BookOverViewDto[]> {
     const books = await this.bookRepository
