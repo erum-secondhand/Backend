@@ -22,20 +22,14 @@ export class Book extends BaseEntity {
     }
   
     try {
-      const decodedUrls = decodeURIComponent(this.imageUrls);
-      console.log('Decoded URLs:', decodedUrls); 
-      return JSON.parse(decodedUrls);
+      return JSON.parse(this.imageUrls);
     } catch (e) {
       console.error('Error parsing imageUrls:', this.imageUrls, e);
-      throw new Error('Invalid JSON format for imageUrls');
+      return [];
     }
   }
-  
 
   set imageUrlsArray(urls: string[]) {
-    if (!Array.isArray(urls)) {
-      throw new Error('Invalid data type for imageUrlsArray. Expected an array.');
-    }
     this.imageUrls = JSON.stringify(urls.map(url => encodeURIComponent(url)));
   }
 
