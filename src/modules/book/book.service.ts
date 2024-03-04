@@ -24,9 +24,7 @@ export class BookService {
     userId: number
   ): Promise<Book> {
     const newBookEntity = this.bookMapper.DtoToEntity(createBookDto);
-    const imageUrls = await Promise.all(
-      images.map((image) => this.s3Service.uploadImage(image)),
-    );
+    const imageUrls = images ? await Promise.all(images.map((image) => this.s3Service.uploadImage(image))) : [];
     newBookEntity.imageUrlsArray = imageUrls;
     newBookEntity.salesStatus = '판매중';
     newBookEntity.userId = userId;
