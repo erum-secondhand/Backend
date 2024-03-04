@@ -29,24 +29,27 @@ export class BookController {
   ) {}
 
   @Post()
-  @UseInterceptors(FilesInterceptor('images'))
-  async createBook(
-    @Req() req: Request,
-    @Body() createBookDto: BookDto,
-    @UploadedFiles() images: Express.Multer.File[],
-    @Res() res: Response,
-  ): Promise<void> {
-    try {
-      const userId = req.session.userId;
-      const newBook = await this.bookService.createBook(createBookDto, images, userId);
-      const response = this.bookMapper.EntityToDto(newBook);
-      res.status(HttpStatus.CREATED).json(response);
-    } catch (error) {
-      res
-        .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .json({ error: error.message });
-    }
+@UseInterceptors(FilesInterceptor('images'))
+async createBook(
+  @Req() req: Request,
+  @Body() createBookDto: BookDto,
+  @UploadedFiles() images: Express.Multer.File[],
+  @Res() res: Response,
+): Promise<void> {
+  try {
+    console.log('Received images:', images);
+    console.log('Received createBookDto:', createBookDto);
+
+    const userId = req.session.userId;
+    const newBook = await this.bookService.createBook(createBookDto, images, userId);
+    const response = this.bookMapper.EntityToDto(newBook);
+    res.status(HttpStatus.CREATED).json(response);
+  } catch (error) {
+    console.error('Error in createBook:', error);
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: error.message });
   }
+}
+
 
   @Get()
   async getAllBooks(@Res() res: Response) {
