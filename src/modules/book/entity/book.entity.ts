@@ -30,8 +30,8 @@ export class Book extends BaseEntity {
   }
 
   set imageUrlsArray(urls: string[]) {
-    this.imageUrls = JSON.stringify(urls.map(url => encodeURIComponent(url)));
-  }
+    this.imageUrls = JSON.stringify(urls);
+  }  
 
   @Column()
   title: string;
