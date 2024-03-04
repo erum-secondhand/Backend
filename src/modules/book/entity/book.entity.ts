@@ -17,7 +17,12 @@ export class Book extends BaseEntity {
   imageUrls: string;
 
   get imageUrlsArray(): string[] {
-    return JSON.parse(this.imageUrls);
+    try {
+      return this.imageUrls ? JSON.parse(this.imageUrls) : [];
+    } catch (e) {
+      console.error('Error parsing imageUrls:', this.imageUrls, e);
+      return [];
+    }
   }
 
   set imageUrlsArray(urls: string[]) {
