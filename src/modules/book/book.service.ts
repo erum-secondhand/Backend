@@ -23,16 +23,11 @@ export class BookService {
     images: Express.Multer.File[],
     userId: number
   ): Promise<Book> {
-    console.log('Inside createBook, images:', images);
-  
     const newBookEntity = this.bookMapper.DtoToEntity(createBookDto);
   
     if (images) {
       const imageUrls = await Promise.all(
-        images.map((image) => {
-          console.log('Uploading image:', image);
-          return this.s3Service.uploadImage(image);
-        }),
+        images.map((image) => this.s3Service.uploadImage(image)),
       );
       newBookEntity.imageUrlsArray = imageUrls;
     } else {
@@ -44,7 +39,6 @@ export class BookService {
     return this.bookRepository.save(newBookEntity);
   }
   
-
   async getAllBooks(): Promise<BookOverViewDto[]> {
     const books = await this.bookRepository.find({
       where: { salesStatus: '판매중' },
