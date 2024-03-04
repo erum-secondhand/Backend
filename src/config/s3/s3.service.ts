@@ -16,12 +16,12 @@ export class S3Service {
     this.s3_bucket = this.configService.get<string>('AWS_S3_BUCKET_NAME');
   }
 
-  async uploadImage(file: Express.Multer.File): Promise<string> {
+  async uploadImage(file: Express.Multer.File, bookId: number): Promise<string> {
     try {
       const { originalname, buffer, mimetype } = file;
 
       const params = {
-        Bucket: this.s3_bucket,
+        Bucket: `${bookId}/${originalname}`,
         Key: String(originalname),
         Body: buffer,
         ContentType: mimetype,
@@ -29,7 +29,7 @@ export class S3Service {
       };
 
       const s3Response = await this.s3.upload(params).promise();
-      return s3Response.Location;
+      return `https://erum-s3.s3.ap-northeast-2.amazonaws.com/${bookId}/${originalname}`;
     } catch (error) {
       console.error('Error uploading image to S3:', error);
       throw new Error('Image upload failed');
