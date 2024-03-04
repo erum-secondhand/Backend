@@ -29,10 +29,10 @@ export class Book extends BaseEntity {
     }
   }
 
-  set imageUrlsArray(urls: string[]) {
-    this.imageUrls = JSON.stringify(urls);
-  }  
-
+  set imageUrlsArray(urls: string[] | undefined) {
+    this.imageUrls = urls ? JSON.stringify(urls) : '[]';
+  }
+    
   @Column()
   title: string;
 
