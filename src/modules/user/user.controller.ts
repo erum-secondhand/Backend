@@ -21,15 +21,6 @@ export class UserController {
     private readonly authService: AuthService,
   ) {}
 
-  @Post('/verify')
-  async sendVerificationCode(
-    @Body('email') email: string,
-    @Res() res: Response,
-  ) {
-    await this.authService.generateVerificationCode(email);
-    res.status(HttpStatus.OK).json({ message: 'Verification code sent' });
-  }
-
   @Post('/register')
   async registerUser(
     @Body() registerUserRequestDto: UserRegisterRequestDto,
