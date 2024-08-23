@@ -6,6 +6,7 @@ import {
   Get,
   Res,
   Session,
+  Put,
 } from '@nestjs/common';
 import { BadRequestException } from '@nestjs/common';
 import { Response } from 'express';
@@ -13,6 +14,7 @@ import { UserService } from './user.service';
 import { UserRegisterRequestDto } from './dto/user-register-request.dto';
 import { UserLoginRequestDto } from './dto/user-login-request.dto';
 import { AuthService } from './auth/auth.service';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Controller('users')
 export class UserController {
@@ -93,5 +95,19 @@ export class UserController {
       }
       res.status(HttpStatus.OK).json({ message: `${name}님 안녕히가세요!` });
     });
+  }
+
+  @Put('/reset-password')
+  async resetPassword(@Body() resetDto: ResetPasswordDto, @Res() res: Response) {
+    try {
+      const success = await this.userService.resetPassword(resetDto.email, resetDto.newPassword);
+      if (success) {
+        res.status(HttpStatus.OK).json({ message: '비밀번호가 성공적으로 재설정되었습니다.' });
+      } else {
+        res.status(HttpStatus.BAD_REQUEST).json({ message: '비밀번호 재설정에 실패했습니다.' });
+      }
+    } catch (error) {
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: '서버 오류로 비밀번호 재설정에 실패했습니다.' });
+    }
   }
 }
