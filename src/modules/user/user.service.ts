@@ -77,4 +77,18 @@ export class UserService {
   async findUserById(id: number): Promise<User | undefined> {
     return this.userRepository.findOne({ where: { id } });
   }
+
+  async resetPassword(email: string, newPassword: string): Promise<boolean> {
+    const user = await this.userRepository.findOne({ where: { email } });
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    user.password = hashedPassword;
+    await this.userRepository.save(user);
+    return true;
+  }
 }
