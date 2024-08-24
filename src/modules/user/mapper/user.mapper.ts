@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { UserRegisterRequestDto } from '../dto/request/user-register.dto';
+import { UserRegisterDto } from '../dto/request/user-register.dto';
 import { User } from '../entity/user.entity';
-import { UserRegisterResponseDto } from '../dto/response/user-register-result.dto';
+import { UserRegisterResultDto } from '../dto/response/user-register-result.dto';
 
 @Injectable()
 export class UserMapper {
@@ -10,7 +10,7 @@ export class UserMapper {
     name,
     studentId,
     major,
-  }: UserRegisterRequestDto): User {
+  }: UserRegisterDto): User {
     const user = new User();
 
     user.email = email;
@@ -21,7 +21,7 @@ export class UserMapper {
     return user;
   }
 
-  EntityToDto(user: User): UserRegisterResponseDto {
+  EntityToDto(user: User): UserRegisterResultDto {
     return {
       id: user.id,
       email: user.email,
