@@ -11,10 +11,10 @@ import {
 import { BadRequestException } from '@nestjs/common';
 import { Response } from 'express';
 import { UserService } from './user.service';
-import { UserRegisterRequestDto } from './dto/request/user-register-request.dto';
-import { UserLoginRequestDto } from './dto/request/user-login-request.dto';
+import { UserRegisterDto } from './dto/request/user-register.dto';
+import { UserLoginDto } from './dto/request/user-login.dto';
 import { AuthService } from './auth/auth.service';
-import { ResetPasswordDto } from './dto/reset-password.dto';
+import { UserResetPasswordDto } from './dto/request/user-reset-password.dto';
 
 @Controller('users')
 export class UserController {
@@ -25,7 +25,7 @@ export class UserController {
 
   @Post('/register')
   async registerUser(
-    @Body() registerUserRequestDto: UserRegisterRequestDto,
+    @Body() registerUserRequestDto: UserRegisterDto,
     @Body('verificationCode') verificationCode: string,
     @Res() res: Response,
   ) {
@@ -47,7 +47,7 @@ export class UserController {
 
   @Post('/login')
   async loginUser(
-    @Body() userLoginRequestDto: UserLoginRequestDto,
+    @Body() userLoginRequestDto: UserLoginDto,
     @Session() session: Record<string, any>,
     @Res() res: Response,
   ) {
@@ -98,7 +98,7 @@ export class UserController {
   }
 
   @Put('/reset-password')
-  async resetPassword(@Body() resetDto: ResetPasswordDto, @Res() res: Response) {
+  async resetPassword(@Body() resetDto: UserResetPasswordDto, @Res() res: Response) {
     try {
       const success = await this.userService.resetPassword(resetDto.email, resetDto.newPassword);
       if (success) {

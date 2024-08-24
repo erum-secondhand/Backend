@@ -3,16 +3,16 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcryptjs';
 import { User } from './entity/user.entity';
 import { Repository } from 'typeorm';
-import { UserRegisterRequestDto } from './dto/request/user-register-request.dto';
+import { UserRegisterDto } from './dto/request/user-register.dto';
 import { UserMapper } from './mapper/user.mapper';
 import { AuthService } from './auth/auth.service';
 import { EmailAlreadyExistsException } from './userException/EmailAlreadyExistsException';
 import { StudentIDAlreadyExistsException } from './userException/StudentIDAlreadyExistsException';
-import { UserLoginRequestDto } from './dto/request/user-login-request.dto';
-import { UserLoginResponseDto } from './dto/response/user-login-response.dto';
+import { UserLoginDto } from './dto/request/user-login.dto';
+import { UserLoginResultDto } from './dto/response/user-login-result.dto';
 import { NotFoundUserException } from './userException/NotFoundUserException';
 import { LoginInvalidPasswordException } from './userException/LoginInvalidPasswordException';
-import { UserRegisterResponseDto } from './dto/response/user-register-response.dto';
+import { UserRegisterResultDto } from './dto/response/user-register-result.dto';
 
 @Injectable()
 export class UserService {
@@ -26,9 +26,9 @@ export class UserService {
   ) {}
 
   async registerUser(
-    userRegisterRequestDto: UserRegisterRequestDto,
+    userRegisterRequestDto: UserRegisterDto,
     verificationCode: string,
-  ): Promise<UserRegisterResponseDto> {
+  ): Promise<UserRegisterResultDto> {
     const { email, studentId, password } = userRegisterRequestDto;
 
     const isEmailExist = await this.userRepository.findOne({
@@ -57,9 +57,9 @@ export class UserService {
   }
 
   async loginUser(
-    userLoginRequestDto: UserLoginRequestDto,
+    userLoginRequestDto: UserLoginDto,
     session: Record<string, any>,
-  ): Promise<UserLoginResponseDto> {
+  ): Promise<UserLoginResultDto> {
     const { email, password } = userLoginRequestDto;
 
     const user = await this.userRepository.findOne({ where: { email } });
