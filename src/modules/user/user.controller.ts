@@ -10,11 +10,11 @@ import {
 } from '@nestjs/common';
 import { BadRequestException } from '@nestjs/common';
 import { Response } from 'express';
-import { UserService } from './user.service';
-import { UserRegisterDto } from './dto/request/user-register.dto';
-import { UserLoginDto } from './dto/request/user-login.dto';
-import { AuthService } from './auth/auth.service';
-import { UserResetPasswordDto } from './dto/request/user-reset-password.dto';
+import { UserService } from 'src/modules/user/user.service';
+import { UserRegisterDto } from 'src/modules/user/dto/request/user-register.dto';
+import { UserLoginDto } from 'src/modules/user/dto/request/user-login.dto';
+import { AuthService } from 'src/modules/user/auth/auth.service';
+import { UserResetPasswordDto } from 'src/modules/user/dto/request/user-reset-password.dto';
 
 @Controller('users')
 export class UserController {

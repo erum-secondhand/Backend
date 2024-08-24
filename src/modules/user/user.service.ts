@@ -1,18 +1,18 @@
 import { Injectable, BadRequestException, Session } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import * as bcrypt from 'bcryptjs';
-import { User } from './entity/user.entity';
 import { Repository } from 'typeorm';
-import { UserRegisterDto } from './dto/request/user-register.dto';
-import { UserMapper } from './mapper/user.mapper';
-import { AuthService } from './auth/auth.service';
-import { EmailAlreadyExistsException } from './userException/EmailAlreadyExistsException';
-import { StudentIDAlreadyExistsException } from './userException/StudentIDAlreadyExistsException';
-import { UserLoginDto } from './dto/request/user-login.dto';
-import { UserLoginResultDto } from './dto/response/user-login-result.dto';
-import { NotFoundUserException } from './userException/NotFoundUserException';
-import { LoginInvalidPasswordException } from './userException/LoginInvalidPasswordException';
-import { UserRegisterResultDto } from './dto/response/user-register-result.dto';
+import * as bcrypt from 'bcryptjs';
+import { User } from 'src/modules/user/entity/user.entity';
+import { UserMapper } from 'src/modules/user/mapper/user.mapper';
+import { AuthService } from 'src/modules/user/auth/auth.service';
+import { UserRegisterDto } from 'src/modules/user/dto/request/user-register.dto';
+import { UserRegisterResultDto } from 'src/modules/user/dto/response/user-register-result.dto';
+import { UserLoginDto } from 'src/modules/user/dto/request/user-login.dto';
+import { UserLoginResultDto } from 'src/modules/user/dto/response/user-login-result.dto';
+import { EmailAlreadyExistsException } from 'src/modules/user/userException/EmailAlreadyExistsException';
+import { StudentIDAlreadyExistsException } from 'src/modules/user/userException/StudentIDAlreadyExistsException';
+import { NotFoundUserException } from 'src/modules/user/userException/NotFoundUserException';
+import { LoginInvalidPasswordException } from 'src/modules/user/userException/LoginInvalidPasswordException';
 
 @Injectable()
 export class UserService {
