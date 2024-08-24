@@ -11,8 +11,8 @@ import {
 import { BadRequestException } from '@nestjs/common';
 import { Response } from 'express';
 import { UserService } from './user.service';
-import { UserRegisterRequestDto } from './dto/user-register-request.dto';
-import { UserLoginRequestDto } from './dto/user-login-request.dto';
+import { UserRegisterRequestDto } from './dto/request/user-register-request.dto';
+import { UserLoginRequestDto } from './dto/request/user-login-request.dto';
 import { AuthService } from './auth/auth.service';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 

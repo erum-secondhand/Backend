@@ -3,16 +3,16 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcryptjs';
 import { User } from './entity/user.entity';
 import { Repository } from 'typeorm';
-import { UserRegisterRequestDto } from './dto/user-register-request.dto';
+import { UserRegisterRequestDto } from './dto/request/user-register-request.dto';
 import { UserMapper } from './mapper/user.mapper';
 import { AuthService } from './auth/auth.service';
 import { EmailAlreadyExistsException } from './userException/EmailAlreadyExistsException';
 import { StudentIDAlreadyExistsException } from './userException/StudentIDAlreadyExistsException';
-import { UserLoginRequestDto } from './dto/user-login-request.dto';
-import { UserLoginResponseDto } from './dto/user-login-response.dto';
+import { UserLoginRequestDto } from './dto/request/user-login-request.dto';
+import { UserLoginResponseDto } from './dto/response/user-login-response.dto';
 import { NotFoundUserException } from './userException/NotFoundUserException';
 import { LoginInvalidPasswordException } from './userException/LoginInvalidPasswordException';
-import { UserRegisterResponseDto } from './dto/user-register-response.dto';
+import { UserRegisterResponseDto } from './dto/response/user-register-response.dto';
 
 @Injectable()
 export class UserService {
