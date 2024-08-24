@@ -8,13 +8,15 @@ import {
   Session,
   Put,
 } from '@nestjs/common';
-import { BadRequestException } from '@nestjs/common';
 import { Response } from 'express';
 import { UserService } from 'src/modules/user/user.service';
 import { UserRegisterDto } from 'src/modules/user/dto/request/user-register.dto';
+import { UserRegisterResultDto } from 'src/modules/user/dto/response/user-register-result.dto';
 import { UserLoginDto } from 'src/modules/user/dto/request/user-login.dto';
 import { AuthService } from 'src/modules/user/auth/auth.service';
 import { UserResetPasswordDto } from 'src/modules/user/dto/request/user-reset-password.dto';
+import { ApiOperation, ApiOkResponse } from '@nestjs/swagger';
+import { IResponse, ResponseDto } from 'src/global/common/response';
 
 @Controller('users')
 export class UserController {
@@ -23,26 +25,20 @@ export class UserController {
     private readonly authService: AuthService,
   ) {}
 
-  @Post('/register')
+  @ApiOperation({
+    summary: '회원가입',
+    operationId: 'registerUser',
+    tags: ['user'],
+  })
+  @ApiOkResponse({
+    type: ResponseDto(UserRegisterResultDto, 'UserRegisterResult'),
+  })
+  @Post('register')
   async registerUser(
-    @Body() registerUserRequestDto: UserRegisterDto,
+    @Body() dto: UserRegisterDto,
     @Body('verificationCode') verificationCode: string,
-    @Res() res: Response,
-  ) {
-    if (
-      !(await this.authService.verifyEmailCode(
-        registerUserRequestDto.email,
-        verificationCode,
-      ))
-    ) {
-      throw new BadRequestException('Invalid or expired verification code.');
-    }
-
-    const newUser = await this.userService.registerUser(
-      registerUserRequestDto,
-      verificationCode,
-    );
-    res.status(HttpStatus.CREATED).json(newUser);
+  ): Promise<IResponse<UserRegisterResultDto>> {
+    return this.userService.registerUser(dto, verificationCode);
   }
 
   @Post('/login')
@@ -98,16 +94,28 @@ export class UserController {
   }
 
   @Put('/reset-password')
-  async resetPassword(@Body() resetDto: UserResetPasswordDto, @Res() res: Response) {
+  async resetPassword(
+    @Body() resetDto: UserResetPasswordDto,
+    @Res() res: Response,
+  ) {
     try {
-      const success = await this.userService.resetPassword(resetDto.email, resetDto.newPassword);
+      const success = await this.userService.resetPassword(
+        resetDto.email,
+        resetDto.newPassword,
+      );
       if (success) {
-        res.status(HttpStatus.OK).json({ message: '비밀번호가 성공적으로 재설정되었습니다.' });
+        res
+          .status(HttpStatus.OK)
+          .json({ message: '비밀번호가 성공적으로 재설정되었습니다.' });
       } else {
-        res.status(HttpStatus.BAD_REQUEST).json({ message: '비밀번호 재설정에 실패했습니다.' });
+        res
+          .status(HttpStatus.BAD_REQUEST)
+          .json({ message: '비밀번호 재설정에 실패했습니다.' });
       }
     } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: '서버 오류로 비밀번호 재설정에 실패했습니다.' });
+      res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json({ message: '서버 오류로 비밀번호 재설정에 실패했습니다.' });
     }
   }
 }

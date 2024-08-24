@@ -13,6 +13,7 @@ import { EmailAlreadyExistsException } from 'src/modules/user/userException/Emai
 import { StudentIDAlreadyExistsException } from 'src/modules/user/userException/StudentIDAlreadyExistsException';
 import { NotFoundUserException } from 'src/modules/user/userException/NotFoundUserException';
 import { LoginInvalidPasswordException } from 'src/modules/user/userException/LoginInvalidPasswordException';
+import { CustomResponse, IResponse } from 'src/global/common/response';
 
 @Injectable()
 export class UserService {
@@ -25,11 +26,12 @@ export class UserService {
     private readonly authService: AuthService,
   ) {}
 
+  // 회원가입
   async registerUser(
-    userRegisterRequestDto: UserRegisterDto,
+    dto: UserRegisterDto,
     verificationCode: string,
-  ): Promise<UserRegisterResultDto> {
-    const { email, studentId, password } = userRegisterRequestDto;
+  ): Promise<IResponse<UserRegisterResultDto>> {
+    const { email, studentId, password } = dto;
 
     const isEmailExist = await this.userRepository.findOne({
       where: { email },
@@ -42,18 +44,19 @@ export class UserService {
     if (isStudentIDExist) throw new StudentIDAlreadyExistsException();
 
     if (!this.authService.verifyEmailCode(email, verificationCode)) {
-      throw new BadRequestException('Invalid or expired verification code.');
+      throw new BadRequestException('유효하지 않거나 만료된 인증 코드입니다.');
     }
 
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const newUserEntity = this.userMapper.DtoToEntity(userRegisterRequestDto);
-    newUserEntity.password = hashedPassword
+    const newUserEntity = this.userMapper.DtoToEntity(dto);
+    newUserEntity.password = hashedPassword;
 
     const savedUser = await this.userRepository.save(newUserEntity);
+    const resultDto = this.userMapper.EntityToDto(savedUser);
 
-    return this.userMapper.EntityToDto(savedUser);
+    return new CustomResponse<UserRegisterResultDto>(201, 'U001', resultDto);
   }
 
   async loginUser(
