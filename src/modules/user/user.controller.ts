@@ -17,6 +17,7 @@ import { AuthService } from 'src/modules/user/auth/auth.service';
 import { UserResetPasswordDto } from 'src/modules/user/dto/request/user-reset-password.dto';
 import { ApiOperation, ApiOkResponse } from '@nestjs/swagger';
 import { IResponse, ResponseDto } from 'src/global/common/response';
+import { UserLoginResultDto } from './dto/response/user-login-result.dto';
 
 @Controller('users')
 export class UserController {
@@ -41,17 +42,20 @@ export class UserController {
     return this.userService.registerUser(dto, verificationCode);
   }
 
-  @Post('/login')
+  @ApiOperation({
+    summary: '로그인',
+    operationId: 'loginUser',
+    tags: ['user'],
+  })
+  @ApiOkResponse({
+    type: ResponseDto(UserLoginResultDto, 'UserLoginResult'),
+  })
+  @Post('login')
   async loginUser(
-    @Body() userLoginRequestDto: UserLoginDto,
+    @Body() dto: UserLoginDto,
     @Session() session: Record<string, any>,
-    @Res() res: Response,
-  ) {
-    const response = await this.userService.loginUser(
-      userLoginRequestDto,
-      session,
-    );
-    res.status(HttpStatus.OK).json(response);
+  ): Promise<IResponse<UserLoginResultDto>> {
+    return this.userService.loginUser(dto, session);
   }
 
   @Get('/status')

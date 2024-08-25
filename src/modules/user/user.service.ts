@@ -59,22 +59,27 @@ export class UserService {
     return new CustomResponse<UserRegisterResultDto>(201, 'U001', resultDto);
   }
 
+  // 로그인
   async loginUser(
-    userLoginRequestDto: UserLoginDto,
+    dto: UserLoginDto,
     session: Record<string, any>,
-  ): Promise<UserLoginResultDto> {
-    const { email, password } = userLoginRequestDto;
+  ): Promise<CustomResponse<UserLoginResultDto>> {
+    const user = await this.userRepository.findOne({
+      where: { email: dto.email },
+    });
 
-    const user = await this.userRepository.findOne({ where: { email } });
     if (!user) throw new NotFoundUserException();
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await bcrypt.compare(dto.password, user.password);
     if (!isPasswordValid) throw new LoginInvalidPasswordException();
 
     session.userId = user.id;
     session.username = user.name;
 
-    return { id: user.id, message: `${user.name}님 안녕하세요!` };
+    const loginResultDto = new UserLoginResultDto();
+    loginResultDto.id = user.id;
+
+    return new CustomResponse<UserLoginResultDto>(200, 'U002', loginResultDto);
   }
 
   async findUserById(id: number): Promise<User | undefined> {
