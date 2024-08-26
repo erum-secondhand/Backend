@@ -111,6 +111,16 @@ export class UserService {
 
     if (!user) throw new NotFoundUserException();
 
+    // TODO: 예외처리 에러 코드 생성 및 적용
+    const isSamePassword = await bcrypt.compare(newPassword, user.password);
+    if (isSamePassword) {
+      return new CustomResponse(
+        409,
+        'U008',
+        '새 비밀번호는 기존 비밀번호와 달라야 합니다.',
+      );
+    }
+
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(newPassword, salt);
 
