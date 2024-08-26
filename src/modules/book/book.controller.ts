@@ -38,19 +38,26 @@ export class BookController {
   ): Promise<void> {
     try {
       const userId = req.session.userId;
-      const newBook = await this.bookService.createBook(createBookDto, images, userId);
+      const newBook = await this.bookService.createBook(
+        createBookDto,
+        images,
+        userId,
+      );
       const response = this.bookMapper.EntityToDto(newBook);
       res.status(HttpStatus.CREATED).json(response);
     } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: error.message });
+      res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json({ error: error.message });
     }
   }
 
-
-
   @Get()
-  async getAllBooks(@Res() res: Response) {
-    const books = await this.bookService.getAllBooks();
+  async getAllBooks(@Query('pageNum') pageNum: number, @Res() res: Response) {
+    pageNum = Number(pageNum);
+    const pageSize = 8;
+
+    const books = await this.bookService.getAllBooks(pageNum, pageSize);
     res.status(HttpStatus.OK).json(books);
   }
 
@@ -72,10 +79,7 @@ export class BookController {
     @Query('type') type: string,
     @Res() res: Response,
   ) {
-    const filteredBooks = await this.bookService.filterBooks(
-      grade,
-      type,
-    );
+    const filteredBooks = await this.bookService.filterBooks(grade, type);
     res.status(HttpStatus.OK).json(filteredBooks);
   }
 
@@ -94,7 +98,7 @@ export class BookController {
         id,
         updateBookDto,
         userId,
-        images
+        images,
       );
       res.status(HttpStatus.OK).json(updatedBook);
     } catch (error) {

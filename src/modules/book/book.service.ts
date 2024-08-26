@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { BookDto } from './dto/book.dto';
@@ -6,6 +10,7 @@ import { BookMapper } from './mapper/book.mapper';
 import { Book } from './entity/book.entity';
 import { S3Service } from '../../config/s3/s3.service';
 import { BookOverViewDto } from './dto/book-overview.dto';
+import { PaginatedBooksResponse } from './dto/paginated-book-response.dto';
 
 @Injectable()
 export class BookService {
@@ -21,10 +26,10 @@ export class BookService {
   async createBook(
     createBookDto: BookDto,
     images: Express.Multer.File[],
-    userId: number
+    userId: number,
   ): Promise<Book> {
     const newBookEntity = this.bookMapper.DtoToEntity(createBookDto);
-  
+
     if (images) {
       const imageUrls = await Promise.all(
         images.map((image) => this.s3Service.uploadImage(image)),
@@ -33,33 +38,50 @@ export class BookService {
     } else {
       newBookEntity.imageUrlsArray = [];
     }
-  
+
     newBookEntity.salesStatus = '판매중';
     newBookEntity.userId = userId;
     return this.bookRepository.save(newBookEntity);
   }
-  
-  async getAllBooks(): Promise<BookOverViewDto[]> {
-    const books = await this.bookRepository.find({
+
+  async getAllBooks(
+    pageNum: number,
+    pageSize: number,
+  ): Promise<PaginatedBooksResponse> {
+    const [result, total] = await this.bookRepository.findAndCount({
       where: { salesStatus: '판매중' },
       order: { createAt: 'DESC' },
+      skip: (pageNum - 1) * pageSize,
+      take: pageSize,
     });
-    return books.map((book) => this.bookMapper.EntityToOverViewDto(book));
+
+    const booksDto = result.map((book) =>
+      this.bookMapper.EntityToOverViewDto(book),
+    );
+
+    return {
+      data: booksDto,
+      pageNum: pageNum,
+      pageSize: pageSize,
+      total: total,
+    };
   }
 
-  async getBookDetail(id: number): Promise<{ bookDto: BookDto, userId: number }> {
+  async getBookDetail(
+    id: number,
+  ): Promise<{ bookDto: BookDto; userId: number }> {
     const book = await this.bookRepository.findOne({ where: { id } });
     if (!book) {
       throw new NotFoundException(`Book with ID ${id} not found`);
     }
-  
+
     const bookDto = this.bookMapper.EntityToDto(book);
     return {
       bookDto,
-      userId: book.userId
+      userId: book.userId,
     };
   }
-  
+
   async searchBooksByTitle(title: string): Promise<BookOverViewDto[]> {
     const books = await this.bookRepository
       .createQueryBuilder('book')
@@ -75,7 +97,9 @@ export class BookService {
     grade?: string,
     description?: string,
   ): Promise<BookOverViewDto[]> {
-    const queryBuilder = this.bookRepository.createQueryBuilder('book').where('book.salesStatus = :status', { status: '판매중' });
+    const queryBuilder = this.bookRepository
+      .createQueryBuilder('book')
+      .where('book.salesStatus = :status', { status: '판매중' });
 
     if (grade) {
       queryBuilder.andWhere('book.grade = :grade', { grade });
@@ -95,8 +119,7 @@ export class BookService {
     id: number,
     updateBookDto: BookDto,
     currentUserId: number,
-    images?: Express.Multer.File[]
-
+    images?: Express.Multer.File[],
   ): Promise<BookDto> {
     const book = await this.bookRepository.findOne({ where: { id } });
     if (!book) {
@@ -104,7 +127,9 @@ export class BookService {
     }
 
     if (book.userId !== currentUserId) {
-      throw new UnauthorizedException('You do not have permission to update this book');
+      throw new UnauthorizedException(
+        'You do not have permission to update this book',
+      );
     }
 
     if (images && images.length > 0) {
@@ -135,15 +160,15 @@ export class BookService {
     soldOutBooks: { books: BookDto[] };
   }> {
     const books = await this.bookRepository.find({ where: { userId: userId } });
-  
+
     const onSaleBooks = books
-      .filter(book => book.salesStatus === '판매중')
-      .map(book => this.bookMapper.EntityToDto(book));
-  
+      .filter((book) => book.salesStatus === '판매중')
+      .map((book) => this.bookMapper.EntityToDto(book));
+
     const soldOutBooks = books
-      .filter(book => book.salesStatus === '판매완료')
-      .map(book => this.bookMapper.EntityToDto(book));
-  
+      .filter((book) => book.salesStatus === '판매완료')
+      .map((book) => this.bookMapper.EntityToDto(book));
+
     return {
       onSaleBooks: { books: onSaleBooks },
       soldOutBooks: { books: soldOutBooks },
