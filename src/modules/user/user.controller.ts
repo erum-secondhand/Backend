@@ -16,7 +16,11 @@ import { UserLoginDto } from 'src/modules/user/dto/request/user-login.dto';
 import { AuthService } from 'src/modules/user/auth/auth.service';
 import { UserResetPasswordDto } from 'src/modules/user/dto/request/user-reset-password.dto';
 import { ApiOperation, ApiOkResponse } from '@nestjs/swagger';
-import { IResponse, ResponseDto } from 'src/global/common/response';
+import {
+  CustomResponse,
+  IResponse,
+  ResponseDto,
+} from 'src/global/common/response';
 import { UserLoginResultDto } from './dto/response/user-login-result.dto';
 
 @Controller('users')
@@ -97,29 +101,15 @@ export class UserController {
     });
   }
 
-  @Put('/reset-password')
+  @ApiOperation({
+    summary: '비밀번호 재설정',
+    operationId: 'resetPassword',
+    tags: ['user'],
+  })
+  @Put('reset-password')
   async resetPassword(
-    @Body() resetDto: UserResetPasswordDto,
-    @Res() res: Response,
-  ) {
-    try {
-      const success = await this.userService.resetPassword(
-        resetDto.email,
-        resetDto.newPassword,
-      );
-      if (success) {
-        res
-          .status(HttpStatus.OK)
-          .json({ message: '비밀번호가 성공적으로 재설정되었습니다.' });
-      } else {
-        res
-          .status(HttpStatus.BAD_REQUEST)
-          .json({ message: '비밀번호 재설정에 실패했습니다.' });
-      }
-    } catch (error) {
-      res
-        .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .json({ message: '서버 오류로 비밀번호 재설정에 실패했습니다.' });
-    }
+    @Body() dto: UserResetPasswordDto,
+  ): Promise<CustomResponse<any>> {
+    return this.userService.resetPassword(dto.email, dto.newPassword);
   }
 }

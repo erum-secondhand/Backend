@@ -86,17 +86,23 @@ export class UserService {
     return this.userRepository.findOne({ where: { id } });
   }
 
-  async resetPassword(email: string, newPassword: string): Promise<boolean> {
+  async resetPassword(
+    email: string,
+    newPassword: string,
+  ): Promise<CustomResponse<any>> {
     const user = await this.userRepository.findOne({ where: { email } });
-    if (!user) {
-      throw new Error('User not found');
-    }
+
+    if (!user) throw new NotFoundUserException();
 
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(newPassword, salt);
 
     user.password = hashedPassword;
     await this.userRepository.save(user);
-    return true;
+    return new CustomResponse(
+      200,
+      'U003',
+      '비밀번호가 성공적으로 재설정되었습니다.',
+    );
   }
 }
