@@ -1,11 +1,11 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 
-export class VerifyEmailDto {
+export class UserResetPasswordDto {
   @IsString()
   @IsNotEmpty()
   email: string;
 
   @IsString()
   @IsNotEmpty()
-  verificationCode: string;
+  newPassword: string;
 }

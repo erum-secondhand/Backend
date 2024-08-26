@@ -1,18 +1,19 @@
 import { Injectable, BadRequestException, Session } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import * as bcrypt from 'bcryptjs';
-import { User } from './entity/user.entity';
 import { Repository } from 'typeorm';
-import { UserRegisterRequestDto } from './dto/user-register-request.dto';
-import { UserMapper } from './mapper/user.mapper';
-import { AuthService } from './auth/auth.service';
-import { EmailAlreadyExistsException } from './userException/EmailAlreadyExistsException';
-import { StudentIDAlreadyExistsException } from './userException/StudentIDAlreadyExistsException';
-import { UserLoginRequestDto } from './dto/user-login-request.dto';
-import { UserLoginResponseDto } from './dto/user-login-response.dto';
-import { NotFoundUserException } from './userException/NotFoundUserException';
-import { LoginInvalidPasswordException } from './userException/LoginInvalidPasswordException';
-import { UserRegisterResponseDto } from './dto/user-register-response.dto';
+import * as bcrypt from 'bcryptjs';
+import { User } from 'src/modules/user/entity/user.entity';
+import { UserMapper } from 'src/modules/user/mapper/user.mapper';
+import { AuthService } from 'src/modules/user/auth/auth.service';
+import { UserRegisterDto } from 'src/modules/user/dto/request/user-register.dto';
+import { UserRegisterResultDto } from 'src/modules/user/dto/response/user-register-result.dto';
+import { UserLoginDto } from 'src/modules/user/dto/request/user-login.dto';
+import { UserLoginResultDto } from 'src/modules/user/dto/response/user-login-result.dto';
+import { EmailAlreadyExistsException } from 'src/modules/user/userException/EmailAlreadyExistsException';
+import { StudentIDAlreadyExistsException } from 'src/modules/user/userException/StudentIDAlreadyExistsException';
+import { NotFoundUserException } from 'src/modules/user/userException/NotFoundUserException';
+import { LoginInvalidPasswordException } from 'src/modules/user/userException/LoginInvalidPasswordException';
+import { CustomResponse, IResponse } from 'src/global/common/response';
 
 @Injectable()
 export class UserService {
@@ -25,11 +26,12 @@ export class UserService {
     private readonly authService: AuthService,
   ) {}
 
+  // 회원가입
   async registerUser(
-    userRegisterRequestDto: UserRegisterRequestDto,
+    dto: UserRegisterDto,
     verificationCode: string,
-  ): Promise<UserRegisterResponseDto> {
-    const { email, studentId, password } = userRegisterRequestDto;
+  ): Promise<IResponse<UserRegisterResultDto>> {
+    const { email, studentId, password } = dto;
 
     const isEmailExist = await this.userRepository.findOne({
       where: { email },
@@ -42,46 +44,81 @@ export class UserService {
     if (isStudentIDExist) throw new StudentIDAlreadyExistsException();
 
     if (!this.authService.verifyEmailCode(email, verificationCode)) {
-      throw new BadRequestException('Invalid or expired verification code.');
+      throw new BadRequestException('유효하지 않거나 만료된 인증 코드입니다.');
     }
 
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const newUserEntity = this.userMapper.DtoToEntity(userRegisterRequestDto);
-    newUserEntity.password = hashedPassword
+    const newUserEntity = this.userMapper.DtoToEntity(dto);
+    newUserEntity.password = hashedPassword;
 
     const savedUser = await this.userRepository.save(newUserEntity);
+    const resultDto = this.userMapper.EntityToDto(savedUser);
 
-    return this.userMapper.EntityToDto(savedUser);
+    return new CustomResponse<UserRegisterResultDto>(201, 'U001', resultDto);
   }
 
+  // 로그인
   async loginUser(
-    userLoginRequestDto: UserLoginRequestDto,
+    dto: UserLoginDto,
     session: Record<string, any>,
-  ): Promise<UserLoginResponseDto> {
-    const { email, password } = userLoginRequestDto;
+  ): Promise<CustomResponse<UserLoginResultDto>> {
+    const user = await this.userRepository.findOne({
+      where: { email: dto.email },
+    });
 
-    const user = await this.userRepository.findOne({ where: { email } });
     if (!user) throw new NotFoundUserException();
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await bcrypt.compare(dto.password, user.password);
     if (!isPasswordValid) throw new LoginInvalidPasswordException();
 
     session.userId = user.id;
     session.username = user.name;
 
-    return { id: user.id, message: `${user.name}님 안녕하세요!` };
+    const loginResultDto = new UserLoginResultDto();
+    loginResultDto.id = user.id;
+
+    return new CustomResponse<UserLoginResultDto>(200, 'U002', loginResultDto);
+  }
+
+  // 로그인 상태 확인
+  async getLoginStatus(userId: number): Promise<CustomResponse<any>> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+
+    if (!user) throw new NotFoundUserException();
+
+    return new CustomResponse(200, 'U005', {
+      isLoggedIn: true,
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      studentId: user.studentId,
+      major: user.major,
+    });
   }
 
   async findUserById(id: number): Promise<User | undefined> {
     return this.userRepository.findOne({ where: { id } });
   }
 
-  async resetPassword(email: string, newPassword: string): Promise<boolean> {
+  // 비밀번호 재설정
+  async resetPassword(
+    email: string,
+    newPassword: string,
+  ): Promise<CustomResponse<any>> {
     const user = await this.userRepository.findOne({ where: { email } });
-    if (!user) {
-      throw new Error('User not found');
+
+    if (!user) throw new NotFoundUserException();
+
+    // TODO: 예외처리 에러 코드 생성 및 적용
+    const isSamePassword = await bcrypt.compare(newPassword, user.password);
+    if (isSamePassword) {
+      return new CustomResponse(
+        409,
+        'U008',
+        '새 비밀번호는 기존 비밀번호와 달라야 합니다.',
+      );
     }
 
     const salt = await bcrypt.genSalt();
@@ -89,6 +126,10 @@ export class UserService {
 
     user.password = hashedPassword;
     await this.userRepository.save(user);
-    return true;
+    return new CustomResponse(
+      200,
+      'U003',
+      '비밀번호가 성공적으로 재설정되었습니다.',
+    );
   }
 }

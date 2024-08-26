@@ -8,13 +8,20 @@ import {
   Session,
   Put,
 } from '@nestjs/common';
-import { BadRequestException } from '@nestjs/common';
 import { Response } from 'express';
-import { UserService } from './user.service';
-import { UserRegisterRequestDto } from './dto/user-register-request.dto';
-import { UserLoginRequestDto } from './dto/user-login-request.dto';
-import { AuthService } from './auth/auth.service';
-import { ResetPasswordDto } from './dto/reset-password.dto';
+import { UserService } from 'src/modules/user/user.service';
+import { UserRegisterDto } from 'src/modules/user/dto/request/user-register.dto';
+import { UserRegisterResultDto } from 'src/modules/user/dto/response/user-register-result.dto';
+import { UserLoginDto } from 'src/modules/user/dto/request/user-login.dto';
+import { AuthService } from 'src/modules/user/auth/auth.service';
+import { UserResetPasswordDto } from 'src/modules/user/dto/request/user-reset-password.dto';
+import { ApiOperation, ApiOkResponse } from '@nestjs/swagger';
+import {
+  CustomResponse,
+  IResponse,
+  ResponseDto,
+} from 'src/global/common/response';
+import { UserLoginResultDto } from './dto/response/user-login-result.dto';
 
 @Controller('users')
 export class UserController {
@@ -23,91 +30,91 @@ export class UserController {
     private readonly authService: AuthService,
   ) {}
 
-  @Post('/register')
+  @ApiOperation({
+    summary: '회원가입',
+    operationId: 'registerUser',
+    tags: ['user'],
+  })
+  @ApiOkResponse({
+    type: ResponseDto(UserRegisterResultDto, 'UserRegisterResult'),
+  })
+  @Post('register')
   async registerUser(
-    @Body() registerUserRequestDto: UserRegisterRequestDto,
+    @Body() dto: UserRegisterDto,
     @Body('verificationCode') verificationCode: string,
-    @Res() res: Response,
-  ) {
-    if (
-      !(await this.authService.verifyEmailCode(
-        registerUserRequestDto.email,
-        verificationCode,
-      ))
-    ) {
-      throw new BadRequestException('Invalid or expired verification code.');
-    }
-
-    const newUser = await this.userService.registerUser(
-      registerUserRequestDto,
-      verificationCode,
-    );
-    res.status(HttpStatus.CREATED).json(newUser);
+  ): Promise<IResponse<UserRegisterResultDto>> {
+    return this.userService.registerUser(dto, verificationCode);
   }
 
-  @Post('/login')
+  @ApiOperation({
+    summary: '로그인',
+    operationId: 'loginUser',
+    tags: ['user'],
+  })
+  @ApiOkResponse({
+    type: ResponseDto(UserLoginResultDto, 'UserLoginResult'),
+  })
+  @Post('login')
   async loginUser(
-    @Body() userLoginRequestDto: UserLoginRequestDto,
+    @Body() dto: UserLoginDto,
     @Session() session: Record<string, any>,
-    @Res() res: Response,
-  ) {
-    const response = await this.userService.loginUser(
-      userLoginRequestDto,
-      session,
-    );
-    res.status(HttpStatus.OK).json(response);
+  ): Promise<IResponse<UserLoginResultDto>> {
+    return this.userService.loginUser(dto, session);
   }
 
-  @Get('/status')
+  // TODO: response dto 파일 생성 및 ApiOkResponse 추가
+  @ApiOperation({
+    summary: '로그인 상태 확인',
+    operationId: 'getLoginStatus',
+    tags: ['user'],
+  })
+  @Get('status')
   async getLoginStatus(
     @Session() session: Record<string, any>,
-    @Res() res: Response,
-  ) {
-    if (session.userId) {
-      const user = await this.userService.findUserById(session.userId);
-      if (user) {
-        return res.status(HttpStatus.OK).json({
-          isLoggedIn: true,
-          user: {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            studentId: user.studentId,
-            major: user.major,
-          },
-        });
-      }
+  ): Promise<CustomResponse<any>> {
+    if (!session.userId) {
+      return new CustomResponse(401, 'U004', '사용자가 로그인하지 않았습니다.');
     }
-    return res.status(HttpStatus.OK).json({ isLoggedIn: false });
+    return this.userService.getLoginStatus(session.userId);
   }
 
-  @Post('/logout')
+  // TODO: ApiOkResponse 추가
+  @ApiOperation({
+    summary: '로그아웃',
+    operationId: 'logoutUser',
+    tags: ['user'],
+  })
+  @Post('logout')
   async logoutUser(
     @Session() session: Record<string, any>,
-    @Res() res: Response,
-  ) {
-    const name = session.username;
-    session.destroy((err) => {
-      if (err) {
-        return res
-          .status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .json({ message: 'Logout failed' });
-      }
-      res.status(HttpStatus.OK).json({ message: `${name}님 안녕히가세요!` });
-    });
+  ): Promise<CustomResponse<any>> {
+    try {
+      const username = session.username;
+      session.destroy((err) => {
+        if (err) {
+          throw new CustomResponse(500, 'U006', '로그아웃에 실패했습니다.');
+        }
+      });
+      return new CustomResponse(200, 'U007', '로그아웃에 성공했습니다.');
+    } catch (error) {
+      return new CustomResponse(
+        500,
+        'U008',
+        '서버 오류로 로그아웃에 실패했습니다.',
+      );
+    }
   }
 
-  @Put('/reset-password')
-  async resetPassword(@Body() resetDto: ResetPasswordDto, @Res() res: Response) {
-    try {
-      const success = await this.userService.resetPassword(resetDto.email, resetDto.newPassword);
-      if (success) {
-        res.status(HttpStatus.OK).json({ message: '비밀번호가 성공적으로 재설정되었습니다.' });
-      } else {
-        res.status(HttpStatus.BAD_REQUEST).json({ message: '비밀번호 재설정에 실패했습니다.' });
-      }
-    } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: '서버 오류로 비밀번호 재설정에 실패했습니다.' });
-    }
+  // TODO: response dto 파일 생성 및 ApiOkResponse 추가
+  @ApiOperation({
+    summary: '비밀번호 재설정',
+    operationId: 'resetPassword',
+    tags: ['user'],
+  })
+  @Put('reset-password')
+  async resetPassword(
+    @Body() dto: UserResetPasswordDto,
+  ): Promise<CustomResponse<any>> {
+    return this.userService.resetPassword(dto.email, dto.newPassword);
   }
 }
