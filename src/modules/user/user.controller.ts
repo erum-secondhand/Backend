@@ -62,27 +62,20 @@ export class UserController {
     return this.userService.loginUser(dto, session);
   }
 
-  @Get('/status')
+  // TODO: response dto 파일 생성 및 ApiOkResponse 추가
+  @ApiOperation({
+    summary: '로그인 상태 확인',
+    operationId: 'getLoginStatus',
+    tags: ['user'],
+  })
+  @Get('status')
   async getLoginStatus(
     @Session() session: Record<string, any>,
-    @Res() res: Response,
-  ) {
-    if (session.userId) {
-      const user = await this.userService.findUserById(session.userId);
-      if (user) {
-        return res.status(HttpStatus.OK).json({
-          isLoggedIn: true,
-          user: {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            studentId: user.studentId,
-            major: user.major,
-          },
-        });
-      }
+  ): Promise<CustomResponse<any>> {
+    if (!session.userId) {
+      return new CustomResponse(401, 'U004', '사용자가 로그인하지 않았습니다.');
     }
-    return res.status(HttpStatus.OK).json({ isLoggedIn: false });
+    return this.userService.getLoginStatus(session.userId);
   }
 
   @Post('/logout')

@@ -82,10 +82,27 @@ export class UserService {
     return new CustomResponse<UserLoginResultDto>(200, 'U002', loginResultDto);
   }
 
+  // 로그인 상태 확인
+  async getLoginStatus(userId: number): Promise<CustomResponse<any>> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+
+    if (!user) throw new NotFoundUserException();
+
+    return new CustomResponse(200, 'U005', {
+      isLoggedIn: true,
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      studentId: user.studentId,
+      major: user.major,
+    });
+  }
+
   async findUserById(id: number): Promise<User | undefined> {
     return this.userRepository.findOne({ where: { id } });
   }
 
+  // 비밀번호 재설정
   async resetPassword(
     email: string,
     newPassword: string,
