@@ -101,6 +101,7 @@ export class UserController {
     });
   }
 
+  // TODO: response dto 파일 생성 및 ApiOkResponse 추가
   @ApiOperation({
     summary: '비밀번호 재설정',
     operationId: 'resetPassword',
