@@ -78,20 +78,31 @@ export class UserController {
     return this.userService.getLoginStatus(session.userId);
   }
 
-  @Post('/logout')
+  // TODO: ApiOkResponse 추가
+  @ApiOperation({
+    summary: '로그아웃',
+    operationId: 'logoutUser',
+    tags: ['user'],
+  })
+  @Post('logout')
   async logoutUser(
     @Session() session: Record<string, any>,
-    @Res() res: Response,
-  ) {
-    const name = session.username;
-    session.destroy((err) => {
-      if (err) {
-        return res
-          .status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .json({ message: 'Logout failed' });
-      }
-      res.status(HttpStatus.OK).json({ message: `${name}님 안녕히가세요!` });
-    });
+  ): Promise<CustomResponse<any>> {
+    try {
+      const username = session.username;
+      session.destroy((err) => {
+        if (err) {
+          throw new CustomResponse(500, 'U006', '로그아웃에 실패했습니다.');
+        }
+      });
+      return new CustomResponse(200, 'U007', '로그아웃에 성공했습니다.');
+    } catch (error) {
+      return new CustomResponse(
+        500,
+        'U008',
+        '서버 오류로 로그아웃에 실패했습니다.',
+      );
+    }
   }
 
   // TODO: response dto 파일 생성 및 ApiOkResponse 추가
