@@ -7,10 +7,11 @@ import { ChatMapper } from './mapper/chat.mapper';
 import { ChatRoom } from './entity/chat-room.entity';
 import { Message } from './entity/chat.entity';
 import { User } from '../user/entity/user.entity';
+import { Book } from '../book/entity/book.entity';
 import { UserModule } from '../user/user.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ChatRoom, Message, User]), UserModule],
+  imports: [TypeOrmModule.forFeature([ChatRoom, Message, User, Book]), UserModule],
   controllers: [ChatController],
   providers: [ChatService, ChatMapper, ChatGateway],
   exports: [ChatService],
