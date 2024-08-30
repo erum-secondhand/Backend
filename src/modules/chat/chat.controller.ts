@@ -25,25 +25,21 @@ export class ChatController {
     @Query('bookId') bookId: number,
     @Query('socketId') socketId?: string,
   ): Promise<ChatRoom> {
-    // 필수 쿼리 파라미터 체크
     if (!sellerId || !buyerId || !bookId) {
       throw new NotFoundException('Missing required query parameters');
     }
 
-    // seller, buyer, book을 조회
     const seller = await this.chatService.findUserById(sellerId);
     const buyer = await this.chatService.findUserById(buyerId);
     const book = await this.chatService.findBookById(bookId);
 
-    // 유효성 검사를 위한 체크
     if (!seller || !buyer || !book) {
       throw new NotFoundException('Invalid seller, buyer, or book ID');
     }
 
-    // 채팅방 생성 또는 조회
     const chatRoom = await this.chatService.findOrCreateChatRoom(sellerId, buyerId, bookId);
 
-    // WebSocket을 통해 채팅방 참가 알림 전송
+    //웹소켓
     if (socketId) {
       this.chatGateway.server.to(socketId).emit('roomJoined', chatRoom.id);
     }

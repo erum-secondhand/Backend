@@ -38,20 +38,33 @@ export class ChatService {
 
     let chatRoom = await this.chatRoomRepository.findOne({
       where: {
-        seller: { id: seller.id },
-        buyer: { id: buyer.id },
-        book: { id: book.id },
+        seller: { id: sellerId },
+        buyer: { id: buyerId },
+        book: { id: bookId },
       },
       relations: ['seller', 'buyer', 'book']
     });
   
     if (!chatRoom) {
-      chatRoom = this.chatRoomRepository.create({
-        seller: seller,
-        buyer: buyer,
-        book: book,
+      await this.chatRoomRepository.manager.transaction(async transactionalEntityManager => {
+        chatRoom = await transactionalEntityManager.findOne(ChatRoom, {
+          where: {
+            seller: { id: sellerId },
+            buyer: { id: buyerId },
+            book: { id: bookId },
+          },
+          relations: ['seller', 'buyer', 'book']
+        });
+  
+        if (!chatRoom) {
+          chatRoom = this.chatRoomRepository.create({
+            seller: seller,
+            buyer: buyer,
+            book: book,
+          });
+          await transactionalEntityManager.save(chatRoom);
+        }
       });
-      await this.chatRoomRepository.save(chatRoom);
     }
   
     return chatRoom;
