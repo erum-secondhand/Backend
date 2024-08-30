@@ -97,14 +97,13 @@ export class ChatService {
       const recentMessage = chatRoom.messages.length
         ? chatRoom.messages[chatRoom.messages.length - 1].content
         : '';
-
-      const otherPerson = chatRoom.seller.id === userId 
-        ? chatRoom.buyer.name 
-        : chatRoom.seller.name;
       
       return {
         id: chatRoom.id,
-        otherPerson: otherPerson,
+        sellerId: chatRoom.seller.id,
+        sellerName: chatRoom.seller.name,
+        buyerId: chatRoom.buyer.id,
+        buyerName: chatRoom.buyer.name,
         updatedAt: chatRoom.updateAt.toLocaleString(),
         recentMessage: recentMessage,
       };
