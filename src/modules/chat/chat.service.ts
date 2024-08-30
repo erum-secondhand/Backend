@@ -46,25 +46,12 @@ export class ChatService {
     });
   
     if (!chatRoom) {
-      await this.chatRoomRepository.manager.transaction(async transactionalEntityManager => {
-        chatRoom = await transactionalEntityManager.findOne(ChatRoom, {
-          where: {
-            seller: { id: sellerId },
-            buyer: { id: buyerId },
-            book: { id: bookId },
-          },
-          relations: ['seller', 'buyer', 'book']
-        });
-  
-        if (!chatRoom) {
-          chatRoom = this.chatRoomRepository.create({
-            seller: seller,
-            buyer: buyer,
-            book: book,
-          });
-          await transactionalEntityManager.save(chatRoom);
-        }
+      chatRoom = this.chatRoomRepository.create({
+        seller: seller,
+        buyer: buyer,
+        book: book,
       });
+      await this.chatRoomRepository.save(chatRoom);
     }
   
     return chatRoom;
