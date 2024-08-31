@@ -90,7 +90,7 @@ export class ChatService {
         { seller: { id: userId } },
         { buyer: { id: userId } },
       ],
-      relations: ['messages', 'seller', 'buyer'],
+      relations: ['messages', 'seller', 'buyer', 'book'],
     });
 
     return Promise.all(chatRooms.map(async (chatRoom) => {
@@ -101,6 +101,7 @@ export class ChatService {
   
       return {
         id: chatRoom.id,
+        bookId: chatRoom.book.id,
         sellerId: chatRoom.seller.id,
         sellerName: chatRoom.seller.name,
         buyerId: chatRoom.buyer.id,
