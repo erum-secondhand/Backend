@@ -1,6 +1,6 @@
 import { IsNotEmpty } from 'class-validator';
 
-export class UserRegisterRequestDto {
+export class UserRegisterDto {
   @IsNotEmpty()
   email: string;
 

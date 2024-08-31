@@ -1,5 +1,5 @@
-import { ErrorCode } from '../../../global/exception/errorCode';
-import { CustomException } from '../../../global/exception/customException';
+import { ErrorCode } from 'src/global/exception/errorCode';
+import { CustomException } from 'src/global/exception/customException';
 import { HttpStatus } from '@nestjs/common';
 
 export class EmailAlreadyExistsException extends CustomException {

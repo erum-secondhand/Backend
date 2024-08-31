@@ -1,6 +1,6 @@
 import { HttpStatus } from '@nestjs/common';
-import { CustomException } from '../../../global/exception/customException';
-import { ErrorCode } from '../../../global/exception/errorCode';
+import { CustomException } from 'src/global/exception/customException';
+import { ErrorCode } from 'src/global/exception/errorCode';
 
 export class LoginInvalidPasswordException extends CustomException {
   constructor() {

@@ -1,7 +1,7 @@
 import { Body, Controller, Post, Res, HttpStatus } from '@nestjs/common';
 import { Response } from 'express';
-import { AuthService } from './auth.service';
-import { VerifyEmailDto } from '../dto/verify-email.dto';
+import { AuthService } from 'src/modules/user/auth/auth.service';
+import { UserVerifyEmailDto } from 'src/modules/user/dto/request/user-verify-email.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -18,7 +18,7 @@ export class AuthController {
   }
 
   @Post('/verify')
-  async verifyCode(@Body() verifyDto: VerifyEmailDto, @Res() res: Response) {
+  async verifyCode(@Body() verifyDto: UserVerifyEmailDto, @Res() res: Response) {
     if (this.authService.verifyEmailCode(verifyDto.email, verifyDto.verificationCode)) {
       res.status(HttpStatus.OK).json({ message: '이메일이 성공적으로 인증되었습니다.' });
     } else {
