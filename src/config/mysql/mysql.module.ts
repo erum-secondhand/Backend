@@ -3,6 +3,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Book } from '../../modules/book/entity/book.entity';
 import { User } from '../../modules/user/entity/user.entity';
+import { ChatRoom } from '../../modules/chat/entity/chat-room.entity';
+import { Message } from '../../modules/chat/entity/chat.entity';
 
 @Module({
   imports: [
@@ -16,7 +18,7 @@ import { User } from '../../modules/user/entity/user.entity';
         username: configService.get('DB_USER'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
-        entities: [User, Book],
+        entities: [User, Book, ChatRoom, Message],
         synchronize: true,
         logging: true,
       }),

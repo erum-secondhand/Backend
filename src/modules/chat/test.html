@@ -1,0 +1,88 @@
+/* 테스트하려다가 실패한거... */
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>WebSocket Chat</title>
+  <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    input {
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>WebSocket Chat</h1>
+  
+  <input id="messageInput" placeholder="Enter message..." />
+  <input id="roomInput" placeholder="Enter room ID..." />
+  <button onclick="createRoom()">Create Room</button>
+  <button onclick="joinRoom()">Join Room</button>
+  <button onclick="leaveRoom()">Leave Room</button>
+  <button onclick="sendMessage()">Send</button>
+
+  <ul id="messages"></ul>
+
+  <script>
+    // Connect to the WebSocket server
+    const socket = io('http://localhost:8080');
+
+    // Handle incoming messages
+    socket.on('message', (message) => {
+      const li = document.createElement('li');
+      li.innerText = `User ${message.personId}: ${message.content}`;
+      document.getElementById('messages').appendChild(li);
+    });
+
+    // Handle errors
+    socket.on('error', (error) => {
+      console.error('Error:', error.message);
+      alert(`Error: ${error.message}`);
+    });
+
+    // Handle chat room ID from server
+    socket.on('chatRoomId', (chatRoomId) => {
+      console.log('Joined chat room with ID:', chatRoomId);
+      document.getElementById('roomInput').value = chatRoomId;
+    });
+
+    // Create a new chat room
+    function createRoom() {
+      const roomInput = document.getElementById('roomInput');
+      const roomId = roomInput.value;
+      socket.emit('createRoom', { sellerId: 1, buyerId: 2, bookId: 3 }); // Adjust as needed
+    }
+
+    // Join an existing chat room
+    function joinRoom() {
+      const roomInput = document.getElementById('roomInput');
+      const roomId = roomInput.value;
+      socket.emit('joinRoom', { sellerId: 1, buyerId: 2, bookId: 3 }); // Adjust as needed
+    }
+
+    // Leave a chat room
+    function leaveRoom() {
+      const roomInput = document.getElementById('roomInput');
+      const roomId = roomInput.value;
+      socket.emit('leaveRoom', roomId);
+    }
+
+    // Send a message to the chat room
+    function sendMessage() {
+      const messageInput = document.getElementById('messageInput');
+      const roomInput = document.getElementById('roomInput');
+      const message = messageInput.value;
+      const roomId = roomInput.value;
+      const personId = 1; // Example person ID, adjust as needed
+
+      socket.emit('sendMessage', { chatRoomId: roomId, personId, content: message });
+      messageInput.value = '';
+    }
+  </script>
+</body>
+</html>

@@ -3,8 +3,12 @@ import { AppModule } from './app.module';
 import * as session from 'express-session';
 import { Logger } from '@nestjs/common';
 
+import { join } from 'path';
+import { NestExpressApplication } from '@nestjs/platform-express';
+
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
   app.enableCors({
     origin: true,
     credentials: true,
@@ -23,6 +27,8 @@ async function bootstrap() {
   );
 
   app.setGlobalPrefix('api/v1');
+
+  app.useStaticAssets(join(__dirname, '..', 'src', 'modules', 'chat'));
 
   await app.listen(8080);
 }
