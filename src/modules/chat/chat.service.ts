@@ -95,17 +95,18 @@ export class ChatService {
 
     return Promise.all(chatRooms.map(async (chatRoom) => {
       const recentMessage = chatRoom.messages.length
-        ? chatRoom.messages[chatRoom.messages.length - 1].content
-        : '';
-      
+        ? chatRoom.messages.reduce((latest, message) => 
+            message.createAt > latest.createAt ? message : latest, chatRoom.messages[0])
+        : null;
+  
       return {
         id: chatRoom.id,
         sellerId: chatRoom.seller.id,
         sellerName: chatRoom.seller.name,
         buyerId: chatRoom.buyer.id,
         buyerName: chatRoom.buyer.name,
-        updatedAt: chatRoom.updateAt.toLocaleString(),
-        recentMessage: recentMessage,
+        updatedAt: recentMessage ? recentMessage.createAt.toLocaleString() : chatRoom.updateAt.toLocaleString(),
+        recentMessage: recentMessage ? recentMessage.content : '',
       };
     }));
   }
