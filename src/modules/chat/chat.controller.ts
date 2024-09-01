@@ -41,10 +41,11 @@ export class ChatController {
 
     //웹소켓
     if (chatRoom && socketId) {
-      this.chatGateway.server.to(socketId).emit('roomJoined', chatRoom.id);
-      this.chatGateway.server.sockets.sockets.get(socketId)?.join(`room-${chatRoom.id}`);
+      const chatRoomId = chatRoom.chatRoom.id;
+      this.chatGateway.server.to(socketId).emit('roomJoined', chatRoomId);
+      this.chatGateway.server.sockets.sockets.get(socketId)?.join(`room-${chatRoomId}`);
     }
 
-    return chatRoom;
+    return chatRoom.chatRoom;
   }
 }
