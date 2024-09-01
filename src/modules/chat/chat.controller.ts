@@ -40,8 +40,9 @@ export class ChatController {
     const chatRoom = await this.chatService.findOrCreateChatRoom(sellerId, buyerId, bookId);
 
     //웹소켓
-    if (socketId) {
+    if (chatRoom && socketId) {
       this.chatGateway.server.to(socketId).emit('roomJoined', chatRoom.id);
+      this.chatGateway.server.sockets.sockets.get(socketId)?.join(`room-${chatRoom.id}`);
     }
 
     return chatRoom;

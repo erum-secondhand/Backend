@@ -7,7 +7,7 @@ import { UserVerifyEmailDto } from 'src/modules/user/dto/request/user-verify-ema
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('/send')
+  @Post('send')
   async sendVerificationCode(@Body('email') email: string, @Res() res: Response) {
     try {
       await this.authService.generateVerificationCode(email);
@@ -17,7 +17,7 @@ export class AuthController {
     }
   }
 
-  @Post('/verify')
+  @Post('verify')
   async verifyCode(@Body() verifyDto: UserVerifyEmailDto, @Res() res: Response) {
     if (this.authService.verifyEmailCode(verifyDto.email, verifyDto.verificationCode)) {
       res.status(HttpStatus.OK).json({ message: '이메일이 성공적으로 인증되었습니다.' });
