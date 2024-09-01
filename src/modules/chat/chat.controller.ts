@@ -2,6 +2,7 @@ import { Controller, Get, Query, NotFoundException } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { ChatRoom } from './entity/chat-room.entity';
 import { ChatGateway } from './chat.gateway';
+import { Message } from 'aws-sdk/clients/cloudwatch';
 
 
 @Controller('chat')
@@ -24,7 +25,7 @@ export class ChatController {
     @Query('buyerId') buyerId: number,
     @Query('bookId') bookId: number,
     @Query('socketId') socketId?: string,
-  ): Promise<ChatRoom> {
+  ) {
     if (!sellerId || !buyerId || !bookId) {
       throw new NotFoundException('Missing required query parameters');
     }
@@ -46,6 +47,6 @@ export class ChatController {
       this.chatGateway.server.sockets.sockets.get(socketId)?.join(`room-${chatRoomId}`);
     }
 
-    return chatRoom.chatRoom;
+    return chatRoom;
   }
 }
