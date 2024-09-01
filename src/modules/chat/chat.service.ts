@@ -31,18 +31,19 @@ export class ChatService {
     sellerId: number,
     buyerId: number,
     bookId: number,
-  ): Promise<ChatRoom> {
+  ): Promise<{ chatRoom: ChatRoom, messages: Message[] }> {
+  
     const seller = await this.findUserById(sellerId);
     const buyer = await this.findUserById(buyerId);
     const book = await this.findBookById(bookId);
-
+  
     let chatRoom = await this.chatRoomRepository.findOne({
       where: {
         seller: { id: sellerId },
         buyer: { id: buyerId },
         book: { id: bookId },
       },
-      relations: ['seller', 'buyer', 'book']
+      relations: ['seller', 'buyer', 'book'],
     });
   
     if (!chatRoom) {
@@ -54,8 +55,15 @@ export class ChatService {
       await this.chatRoomRepository.save(chatRoom);
     }
   
-    return chatRoom;
+    const messages = await this.messageRepository.find({
+      where: { chatRoom: { id: chatRoom.id } },
+      relations: ['person'],
+      order: { createAt: 'ASC' },
+    });
+  
+    return { chatRoom, messages };
   }
+  
   
 
   async saveMessage(
