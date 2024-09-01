@@ -16,8 +16,9 @@ export class ChatGateway {
   ) {
     try {
       const chatRoom = await this.chatService.findOrCreateChatRoom(sellerId, buyerId, bookId);
-      client.join(String(chatRoom.id));
-      client.emit('roomCreated', chatRoom.id);
+      const chatRoomId = chatRoom.chatRoom.id;
+      client.join(String(chatRoomId));
+      client.emit('roomCreated', chatRoomId);
     } catch (error) {
       client.emit('error', error.message || 'An error occurred while creating or joining the room');
     }
