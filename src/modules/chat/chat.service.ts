@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ChatRoom } from './entity/chat-room.entity';
 import { Book } from '../book/entity/book.entity';
 import { Message } from './entity/chat.entity';
-import { User } from '../user/entity/user.entity'
+import { User } from '../user/entity/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -31,12 +31,11 @@ export class ChatService {
     sellerId: number,
     buyerId: number,
     bookId: number,
-  ): Promise<{ chatRoom: ChatRoom, messages: Message[] }> {
-  
+  ): Promise<{ chatRoom: ChatRoom; messages: Message[] }> {
     const seller = await this.findUserById(sellerId);
     const buyer = await this.findUserById(buyerId);
     const book = await this.findBookById(bookId);
-  
+
     let chatRoom = await this.chatRoomRepository.findOne({
       where: {
         seller: { id: sellerId },
@@ -45,7 +44,7 @@ export class ChatService {
       },
       relations: ['seller', 'buyer', 'book'],
     });
-  
+
     if (!chatRoom) {
       chatRoom = this.chatRoomRepository.create({
         seller: seller,
@@ -54,24 +53,24 @@ export class ChatService {
       });
       await this.chatRoomRepository.save(chatRoom);
     }
-  
+
     const messages = await this.messageRepository.find({
       where: { chatRoom: { id: chatRoom.id } },
       relations: ['person'],
       order: { createAt: 'ASC' },
     });
-  
+
     return { chatRoom, messages };
   }
-  
-  
 
   async saveMessage(
-    chatRoomId: number, 
-    personId: number, 
-    content: string
+    chatRoomId: number,
+    personId: number,
+    content: string,
   ): Promise<Message> {
-    const chatRoom = await this.chatRoomRepository.findOneBy({ id: chatRoomId });
+    const chatRoom = await this.chatRoomRepository.findOneBy({
+      id: chatRoomId,
+    });
 
     if (!chatRoom) {
       throw new Error(`ChatRoom with ID ${chatRoomId} not found`);
@@ -92,30 +91,39 @@ export class ChatService {
     return await this.messageRepository.save(message);
   }
 
-  async getChatRoomsForUser(userId: number) {
+  async getChatRoomsForUser(userId: number, bookId: number) {
     const chatRooms = await this.chatRoomRepository.find({
       where: [
         { seller: { id: userId } },
         { buyer: { id: userId } },
+        { book: { id: bookId } },
       ],
-      relations: ['messages', 'seller', 'buyer'],
+      relations: ['messages', 'seller', 'buyer', 'book'],
     });
 
-    return Promise.all(chatRooms.map(async (chatRoom) => {
-      const recentMessage = chatRoom.messages.length
-        ? chatRoom.messages.reduce((latest, message) => 
-            message.createAt > latest.createAt ? message : latest, chatRoom.messages[0])
-        : null;
-  
-      return {
-        id: chatRoom.id,
-        sellerId: chatRoom.seller.id,
-        sellerName: chatRoom.seller.name,
-        buyerId: chatRoom.buyer.id,
-        buyerName: chatRoom.buyer.name,
-        updatedAt: recentMessage ? recentMessage.createAt.toLocaleString() : chatRoom.updateAt.toLocaleString(),
-        recentMessage: recentMessage ? recentMessage.content : '',
-      };
-    }));
+    return Promise.all(
+      chatRooms.map(async (chatRoom) => {
+        const recentMessage = chatRoom.messages.length
+          ? chatRoom.messages.reduce(
+              (latest, message) =>
+                message.createAt > latest.createAt ? message : latest,
+              chatRoom.messages[0],
+            )
+          : null;
+
+        return {
+          id: chatRoom.id,
+          sellerId: chatRoom.seller.id,
+          sellerNamse: chatRoom.seller.name,
+          buyerId: chatRoom.buyer.id,
+          buyerName: chatRoom.buyer.name,
+          bookId: chatRoom.book.id,
+          updatedAt: recentMessage
+            ? recentMessage.createAt.toLocaleString()
+            : chatRoom.updateAt.toLocaleString(),
+          recentMessage: recentMessage ? recentMessage.content : '',
+        };
+      }),
+    );
   }
 }
