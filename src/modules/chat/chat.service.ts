@@ -91,12 +91,11 @@ export class ChatService {
     return await this.messageRepository.save(message);
   }
 
-  async getChatRoomsForUser(userId: number, bookId: number) {
+  async getChatRoomsForUser(userId: number) {
     const chatRooms = await this.chatRoomRepository.find({
       where: [
         { seller: { id: userId } },
         { buyer: { id: userId } },
-        { book: { id: bookId } },
       ],
       relations: ['messages', 'seller', 'buyer', 'book'],
     });
@@ -114,7 +113,7 @@ export class ChatService {
         return {
           id: chatRoom.id,
           sellerId: chatRoom.seller.id,
-          sellerNamse: chatRoom.seller.name,
+          sellerName: chatRoom.seller.name,
           buyerId: chatRoom.buyer.id,
           buyerName: chatRoom.buyer.name,
           bookId: chatRoom.book.id,

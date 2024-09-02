@@ -1,9 +1,6 @@
 import { Controller, Get, Query, NotFoundException } from '@nestjs/common';
 import { ChatService } from './chat.service';
-import { ChatRoom } from './entity/chat-room.entity';
 import { ChatGateway } from './chat.gateway';
-import { Message } from 'aws-sdk/clients/cloudwatch';
-
 
 @Controller('chat')
 export class ChatController {
