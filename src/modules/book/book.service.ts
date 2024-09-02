@@ -148,7 +148,7 @@ export class BookService {
     book.description = updateBookDto.description ?? book.description;
     book.type = updateBookDto.type ?? book.type;
     book.condition = updateBookDto.condition ?? book.condition;
-    book.kakaoLink = updateBookDto.kakaoLink ?? book.kakaoLink;
+    // book.kakaoLink = updateBookDto.kakaoLink ?? book.kakaoLink;
     book.salesStatus = updateBookDto.salesStatus ?? book.salesStatus;
 
     const updatedBook = await this.bookRepository.save(book);

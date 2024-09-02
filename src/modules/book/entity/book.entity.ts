@@ -54,8 +54,8 @@ export class Book extends BaseEntity {
   @Column()
   condition: string;
 
-  @Column()
-  kakaoLink: string;
+  // @Column()
+  // kakaoLink: string;
 
   @Column()
   salesStatus: string;

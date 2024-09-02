@@ -8,7 +8,7 @@ export class BookDto {
   description: string;
   type: string;
   condition: string;
-  kakaoLink: string;
+  // kakaoLink: string;
   salesStatus: string;
   createAt: Date;
   updateAt: Date;
