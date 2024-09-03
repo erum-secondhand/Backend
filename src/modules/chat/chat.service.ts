@@ -92,13 +92,15 @@ export class ChatService {
   }
 
   async getChatRoomsForUser(userId: number) {
-    const chatRooms = await this.chatRoomRepository.find({
-      where: [
-        { seller: { id: userId } },
-        { buyer: { id: userId } },
-      ],
-      relations: ['messages', 'seller', 'buyer', 'book'],
-    });
+    const chatRooms = await this.chatRoomRepository
+      .createQueryBuilder('chatRoom')
+      .leftJoinAndSelect('chatRoom.seller', 'seller')
+      .leftJoinAndSelect('chatRoom.buyer', 'buyer')
+      .leftJoinAndSelect('chatRoom.book', 'book')
+      .leftJoinAndSelect('chatRoom.messages', 'messages')
+      .where('seller.id = :userId OR buyer.id = :userId', { userId })
+      .orderBy('chatRoom.updateAt', 'DESC')
+      .getMany();
 
     return Promise.all(
       chatRooms.map(async (chatRoom) => {
