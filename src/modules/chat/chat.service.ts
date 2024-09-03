@@ -119,6 +119,7 @@ export class ChatService {
           buyerId: chatRoom.buyer.id,
           buyerName: chatRoom.buyer.name,
           bookId: chatRoom.book.id,
+          bookTitle: chatRoom.book.title,
           updatedAt: recentMessage
             ? recentMessage.createAt.toLocaleString()
             : chatRoom.updateAt.toLocaleString(),
