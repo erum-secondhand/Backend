@@ -1,9 +1,4 @@
 {
-  "ts-node": {
-    "files": true,
-    "esm": true,
-    "experimentalSpecifierResolution": "node"
-  },
   "compilerOptions": {
     "module": "commonjs",
     "declaration": true,
@@ -23,5 +18,6 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "typeRoots": ["./node_modules/@types", "./src/types"]
-  }
+  },
+  "include": ["src/**/*.ts", "src/**/*.d.ts"]
 }
