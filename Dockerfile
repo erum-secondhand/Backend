@@ -2,24 +2,24 @@ FROM node:18-alpine
 
 RUN apk add --no-cache bash
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
 COPY package*.json ./
 
 RUN npm install
 
-RUN npm install -g ts-node nodemon
+RUN npm install -g typescript
 
 COPY wait-for-it.sh /usr/wait-for-it.sh
-
 RUN chmod +x /usr/wait-for-it.sh
 
 COPY . .
 
 EXPOSE 8080
 
-ENV NODE_OPTIONS="--max-old-space-size=6144 --loader ts-node/esm --experimental-specifier-resolution=node"
+ENV NODE_OPTIONS="--max-old-space-size=6144"
 ENV TS_NODE_PROJECT="./tsconfig.json"
-ENV TS_NODE_FILES=true
 
-CMD ["nodemon", "--exec", "ts-node", "src/main.ts"]
+RUN tsc
+
+CMD ["node", "dist/main.js"]

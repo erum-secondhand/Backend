@@ -1,7 +1,7 @@
 {
   "ts-node": {
     "files": true,
-    "esm": false
+    "esm": true
   },
   "compilerOptions": {
     "module": "commonjs",
