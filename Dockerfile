@@ -20,6 +20,6 @@ EXPOSE 8080
 ENV NODE_OPTIONS="--max-old-space-size=6144"
 ENV TS_NODE_PROJECT="./tsconfig.json"
 
-RUN tsc
+RUN tsc --project tsconfig.build.json
 
-CMD ["node", "main.js"]
+CMD ["node", "dist/main.js"]
