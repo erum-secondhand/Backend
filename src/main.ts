@@ -21,7 +21,9 @@ async function bootstrap() {
       saveUninitialized: false,
       cookie: {
         httpOnly: true,
+        secure: true,
         maxAge: 3600000,
+        sameSite: 'none',
       },
     }),
   );
