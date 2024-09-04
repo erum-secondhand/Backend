@@ -18,6 +18,8 @@ COPY . .
 
 EXPOSE 8080
 
-ENV NODE_OPTIONS="--max-old-space-size=4096"
+ENV NODE_OPTIONS="--loader ts-node/esm --experimental-specifier-resolution=node"
+ENV TS_NODE_PROJECT="./tsconfig.json"
+ENV TS_NODE_FILES=true
 
 CMD ["nodemon", "--exec", "ts-node", "src/main.ts"]

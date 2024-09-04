@@ -1,8 +1,7 @@
 {
   "ts-node": {
     "files": true,
-    "esm": true,
-    "experimentalSpecifierResolution": "node"
+    "esm": false
   },
   "compilerOptions": {
     "module": "commonjs",
