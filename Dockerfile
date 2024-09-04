@@ -22,4 +22,4 @@ ENV TS_NODE_PROJECT="./tsconfig.json"
 
 RUN tsc
 
-CMD ["node", "dist/main.js"]
+CMD ["node", "main.js"]
