@@ -1,6 +1,6 @@
 import { BookDto } from '../dto/book.dto';
-import { Book } from '../entity/book.entity';
-import { BookOverViewDto } from '../dto/book-overview.dto';
+import { Book } from 'modules/book/entity/book.entity';
+import { BookOverViewDto } from 'modules/book/dto/book-overview.dto';
 
 export class BookMapper {
   DtoToEntity(dto: BookDto): Book {

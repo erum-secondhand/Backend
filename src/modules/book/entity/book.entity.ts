@@ -5,8 +5,8 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { User } from '../../user/entity/user.entity';
-import { BaseEntity } from 'src/global/common/base.entity';
+import { User } from 'modules/user/entity/user.entity';
+import { BaseEntity } from '@global/common/base.entity';
 
 @Entity()
 export class Book extends BaseEntity {

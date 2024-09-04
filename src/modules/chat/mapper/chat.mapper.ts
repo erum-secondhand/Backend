@@ -1,14 +1,17 @@
-import { CreateChatRoomDto } from '../dto/create-chat-room.dto';
-import { SendMessageDto } from '../dto/send-message.dto';
-import { ChatRoom } from '../entity/chat-room.entity';
-import { Message } from '../entity/chat.entity';
-import { User } from '../../user/entity/user.entity';
-import { Book } from '../../book/entity/book.entity';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
+import { CreateChatRoomDto } from 'modules/chat/dto/create-chat-room.dto';
+import { SendMessageDto } from 'modules/chat/dto/send-message.dto';
+import { ChatRoom } from 'modules/chat/entity/chat-room.entity';
+import { Message } from 'modules/chat/entity/chat.entity';
+import { User } from 'modules/user/entity/user.entity';
+import { Book } from 'modules/book/entity/book.entity';
 
 export class ChatMapper {
-  static async mapChatRoomDtoToEntity(dto: CreateChatRoomDto, book: Book, seller: User, buyer: User): Promise<ChatRoom> {
+  static async mapChatRoomDtoToEntity(
+    dto: CreateChatRoomDto,
+    book: Book,
+    seller: User,
+    buyer: User,
+  ): Promise<ChatRoom> {
     const chatRoom = new ChatRoom();
     chatRoom.id = dto.id;
     chatRoom.book = book;
@@ -18,18 +21,25 @@ export class ChatMapper {
     return chatRoom;
   }
 
-  static mapChatRoomEntityToDto(entity: ChatRoom, message: Message): CreateChatRoomDto {
+  static mapChatRoomEntityToDto(
+    entity: ChatRoom,
+    message: Message,
+  ): CreateChatRoomDto {
     return {
       id: entity.id,
       bookId: entity.book.id,
       sellerId: entity.seller.id,
       buyerId: entity.buyer.id,
       recentMessageContent: message.content,
-      updatedAt: entity.updateAt
+      updatedAt: entity.updateAt,
     };
   }
 
-  static async mapMessageDtoToEntity(dto: SendMessageDto, chatRoom: ChatRoom, user: User): Promise<Message> {
+  static async mapMessageDtoToEntity(
+    dto: SendMessageDto,
+    chatRoom: ChatRoom,
+    user: User,
+  ): Promise<Message> {
     const message = new Message();
     message.id = dto.id;
     message.chatRoom = chatRoom;
@@ -43,7 +53,7 @@ export class ChatMapper {
       id: entity.id,
       chatRoomId: entity.chatRoom.id,
       content: entity.content,
-      personId: entity.person.id
+      personId: entity.person.id,
     };
   }
 }

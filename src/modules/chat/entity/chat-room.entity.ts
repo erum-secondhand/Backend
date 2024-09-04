@@ -1,8 +1,15 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
-import { Book } from '../../book/entity/book.entity';
-import { User } from '../../user/entity/user.entity';
-import { Message } from './chat.entity';
-import { BaseEntity } from '../../../global/common/base.entity';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+  OneToMany,
+} from 'typeorm';
+import { Book } from 'modules/book/entity/book.entity';
+import { User } from 'modules/user/entity/user.entity';
+import { Message } from 'modules/chat/entity/chat.entity';
+import { BaseEntity } from '@global/common/base.entity';
 
 @Entity()
 export class ChatRoom extends BaseEntity {

@@ -1,6 +1,6 @@
 import { Controller, Get, Query, NotFoundException, Req } from '@nestjs/common';
-import { ChatService } from './chat.service';
-import { ChatGateway } from './chat.gateway';
+import { ChatService } from 'modules/chat/chat.service';
+import { ChatGateway } from 'modules/chat/chat.gateway';
 import { Request } from 'express';
 
 @Controller('chat')

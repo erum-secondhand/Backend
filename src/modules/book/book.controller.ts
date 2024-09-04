@@ -15,9 +15,9 @@ import {
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { Request, Response } from 'express';
-import { BookDto } from './dto/book.dto';
-import { BookService } from './book.service';
-import { BookMapper } from './mapper/book.mapper';
+import { BookDto } from 'modules/book/dto/book.dto';
+import { BookService } from 'modules/book/book.service';
+import { BookMapper } from 'modules/book/mapper/book.mapper';
 
 @Controller('books')
 export class BookController {

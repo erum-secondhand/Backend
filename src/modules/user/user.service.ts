@@ -2,18 +2,18 @@ import { Injectable, BadRequestException, Session } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
-import { User } from 'src/modules/user/entity/user.entity';
-import { UserMapper } from 'src/modules/user/mapper/user.mapper';
-import { AuthService } from 'src/modules/user/auth/auth.service';
-import { UserRegisterDto } from 'src/modules/user/dto/request/user-register.dto';
-import { UserRegisterResultDto } from 'src/modules/user/dto/response/user-register-result.dto';
-import { UserLoginDto } from 'src/modules/user/dto/request/user-login.dto';
-import { UserLoginResultDto } from 'src/modules/user/dto/response/user-login-result.dto';
-import { EmailAlreadyExistsException } from 'src/modules/user/userException/EmailAlreadyExistsException';
-import { StudentIDAlreadyExistsException } from 'src/modules/user/userException/StudentIDAlreadyExistsException';
-import { NotFoundUserException } from 'src/modules/user/userException/NotFoundUserException';
-import { LoginInvalidPasswordException } from 'src/modules/user/userException/LoginInvalidPasswordException';
-import { CustomResponse, IResponse } from 'src/global/common/response';
+import { User } from 'modules/user/entity/user.entity';
+import { UserMapper } from 'modules/user/mapper/user.mapper';
+import { AuthService } from 'modules/user/auth/auth.service';
+import { UserRegisterDto } from 'modules/user/dto/request/user-register.dto';
+import { UserRegisterResultDto } from 'modules/user/dto/response/user-register-result.dto';
+import { UserLoginDto } from 'modules/user/dto/request/user-login.dto';
+import { UserLoginResultDto } from 'modules/user/dto/response/user-login-result.dto';
+import { EmailAlreadyExistsException } from 'modules/user/userException/EmailAlreadyExistsException';
+import { StudentIDAlreadyExistsException } from 'modules/user/userException/StudentIDAlreadyExistsException';
+import { NotFoundUserException } from 'modules/user/userException/NotFoundUserException';
+import { LoginInvalidPasswordException } from 'modules/user/userException/LoginInvalidPasswordException';
+import { CustomResponse, IResponse } from '@global/common/response';
 
 @Injectable()
 export class UserService {

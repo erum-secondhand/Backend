@@ -5,9 +5,9 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { ChatRoom } from './chat-room.entity';
-import { User } from '../../user/entity/user.entity';
-import { BaseEntity } from 'src/global/common/base.entity';
+import { ChatRoom } from 'modules/chat/entity/chat-room.entity';
+import { User } from 'modules/user/entity/user.entity';
+import { BaseEntity } from '@global/common/base.entity';
 
 @Entity()
 export class Message extends BaseEntity {

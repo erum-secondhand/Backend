@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { BookService } from './book.service';
-import { BookController } from './book.controller';
-import { S3Module } from '../../config/s3/s3.module';
-import { Book } from './entity/book.entity';
-import { BookMapper } from './mapper/book.mapper';
+import { BookService } from 'modules/book/book.service';
+import { BookController } from 'modules/book/book.controller';
+import { S3Module } from 'config/s3/s3.module';
+import { Book } from 'modules/book/entity/book.entity';
+import { BookMapper } from 'modules/book/mapper/book.mapper';
 import { MulterModule } from '@nestjs/platform-express';
 
 @Module({

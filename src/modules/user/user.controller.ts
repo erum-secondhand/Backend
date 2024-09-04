@@ -1,26 +1,16 @@
-import {
-  Body,
-  Controller,
-  HttpStatus,
-  Post,
-  Get,
-  Res,
-  Session,
-  Put,
-} from '@nestjs/common';
-import { Response } from 'express';
-import { UserService } from 'src/modules/user/user.service';
-import { UserRegisterDto } from 'src/modules/user/dto/request/user-register.dto';
-import { UserRegisterResultDto } from 'src/modules/user/dto/response/user-register-result.dto';
-import { UserLoginDto } from 'src/modules/user/dto/request/user-login.dto';
-import { AuthService } from 'src/modules/user/auth/auth.service';
-import { UserResetPasswordDto } from 'src/modules/user/dto/request/user-reset-password.dto';
+import { Body, Controller, Post, Get, Res, Session, Put } from '@nestjs/common';
+import { UserService } from 'modules/user/user.service';
+import { UserRegisterDto } from 'modules/user/dto/request/user-register.dto';
+import { UserRegisterResultDto } from 'modules/user/dto/response/user-register-result.dto';
+import { UserLoginDto } from 'modules/user/dto/request/user-login.dto';
+import { AuthService } from 'modules/user/auth/auth.service';
+import { UserResetPasswordDto } from 'modules/user/dto/request/user-reset-password.dto';
 import { ApiOperation, ApiOkResponse } from '@nestjs/swagger';
 import {
   CustomResponse,
   IResponse,
   ResponseDto,
-} from 'src/global/common/response';
+} from '@global/common/response';
 import { UserLoginResultDto } from './dto/response/user-login-result.dto';
 
 @Controller('users')

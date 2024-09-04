@@ -1,16 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { UserRegisterDto } from 'src/modules/user/dto/request/user-register.dto';
-import { User } from 'src/modules/user/entity/user.entity';
-import { UserRegisterResultDto } from 'src/modules/user/dto/response/user-register-result.dto';
+import { UserRegisterDto } from 'modules/user/dto/request/user-register.dto';
+import { User } from 'modules/user/entity/user.entity';
+import { UserRegisterResultDto } from 'modules/user/dto/response/user-register-result.dto';
 
 @Injectable()
 export class UserMapper {
-  DtoToEntity({
-    email,
-    name,
-    studentId,
-    major,
-  }: UserRegisterDto): User {
+  DtoToEntity({ email, name, studentId, major }: UserRegisterDto): User {
     const user = new User();
 
     user.email = email;

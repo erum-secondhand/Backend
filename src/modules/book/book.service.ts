@@ -5,12 +5,12 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { BookDto } from './dto/book.dto';
-import { BookMapper } from './mapper/book.mapper';
-import { Book } from './entity/book.entity';
-import { S3Service } from '../../config/s3/s3.service';
-import { BookOverViewDto } from './dto/book-overview.dto';
-import { PaginatedBooksResponse } from './dto/paginated-book-response.dto';
+import { BookDto } from 'modules/book/dto/book.dto';
+import { BookMapper } from 'modules/book/mapper/book.mapper';
+import { Book } from 'modules/book/entity/book.entity';
+import { S3Service } from 'config/s3/s3.service';
+import { BookOverViewDto } from 'modules/book/dto/book-overview.dto';
+import { PaginatedBooksResponse } from 'modules/book/dto/paginated-book-response.dto';
 
 @Injectable()
 export class BookService {

@@ -1,4 +1,4 @@
-import { BookOverViewDto } from './book-overview.dto';
+import { BookOverViewDto } from 'modules/book/dto/book-overview.dto';
 
 export interface PaginatedBooksResponse {
   data: BookOverViewDto[];
