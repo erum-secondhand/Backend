@@ -1,7 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as session from 'express-session';
-import { Logger } from '@nestjs/common';
 
 import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';

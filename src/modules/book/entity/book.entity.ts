@@ -5,8 +5,8 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { BaseEntity } from '../../../global/common/base.entity';
 import { User } from '../../user/entity/user.entity';
+import { BaseEntity } from 'src/global/common/base.entity';
 
 @Entity()
 export class Book extends BaseEntity {
@@ -17,10 +17,10 @@ export class Book extends BaseEntity {
   imageUrls: string;
 
   get imageUrlsArray(): string[] {
-    if (!this.imageUrls || this.imageUrls.trim() === "") {
+    if (!this.imageUrls || this.imageUrls.trim() === '') {
       return [];
     }
-  
+
     try {
       return JSON.parse(this.imageUrls);
     } catch (e) {
@@ -32,7 +32,7 @@ export class Book extends BaseEntity {
   set imageUrlsArray(urls: string[] | undefined) {
     this.imageUrls = urls ? JSON.stringify(urls) : '[]';
   }
-    
+
   @Column()
   title: string;
 
