@@ -18,7 +18,7 @@ COPY . .
 
 EXPOSE 8080
 
-ENV NODE_OPTIONS="--loader ts-node/esm --experimental-specifier-resolution=node"
+ENV NODE_OPTIONS="--max-old-space-size=6144 --loader ts-node/esm --experimental-specifier-resolution=node"
 ENV TS_NODE_PROJECT="./tsconfig.json"
 ENV TS_NODE_FILES=true
 
