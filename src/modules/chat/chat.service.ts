@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ChatRoom } from './entity/chat-room.entity';
 import { Book } from '../book/entity/book.entity';
 import { Message } from './entity/chat.entity';
-import { User } from '../user/entity/user.entity'
+import { User } from '../user/entity/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -31,7 +31,7 @@ export class ChatService {
     sellerId: number,
     buyerId: number,
     bookId: number,
-  ): Promise<ChatRoom> {
+  ): Promise<{ chatRoom: ChatRoom; messages: Message[] }> {
     const seller = await this.findUserById(sellerId);
     const buyer = await this.findUserById(buyerId);
     const book = await this.findBookById(bookId);
@@ -42,9 +42,9 @@ export class ChatService {
         buyer: { id: buyerId },
         book: { id: bookId },
       },
-      relations: ['seller', 'buyer', 'book']
+      relations: ['seller', 'buyer', 'book'],
     });
-  
+
     if (!chatRoom) {
       chatRoom = this.chatRoomRepository.create({
         seller: seller,
@@ -53,17 +53,24 @@ export class ChatService {
       });
       await this.chatRoomRepository.save(chatRoom);
     }
-  
-    return chatRoom;
+
+    const messages = await this.messageRepository.find({
+      where: { chatRoom: { id: chatRoom.id } },
+      relations: ['person'],
+      order: { createAt: 'ASC' },
+    });
+
+    return { chatRoom, messages };
   }
-  
 
   async saveMessage(
-    chatRoomId: number, 
-    personId: number, 
-    content: string
+    chatRoomId: number,
+    personId: number,
+    content: string,
   ): Promise<Message> {
-    const chatRoom = await this.chatRoomRepository.findOneBy({ id: chatRoomId });
+    const chatRoom = await this.chatRoomRepository.findOneBy({
+      id: chatRoomId,
+    });
 
     if (!chatRoom) {
       throw new Error(`ChatRoom with ID ${chatRoomId} not found`);
@@ -85,30 +92,40 @@ export class ChatService {
   }
 
   async getChatRoomsForUser(userId: number) {
-    const chatRooms = await this.chatRoomRepository.find({
-      where: [
-        { seller: { id: userId } },
-        { buyer: { id: userId } },
-      ],
-      relations: ['messages', 'seller', 'buyer', 'book'],
-    });
+    const chatRooms = await this.chatRoomRepository
+      .createQueryBuilder('chatRoom')
+      .leftJoinAndSelect('chatRoom.seller', 'seller')
+      .leftJoinAndSelect('chatRoom.buyer', 'buyer')
+      .leftJoinAndSelect('chatRoom.book', 'book')
+      .leftJoinAndSelect('chatRoom.messages', 'messages')
+      .where('seller.id = :userId OR buyer.id = :userId', { userId })
+      .orderBy('chatRoom.updateAt', 'DESC')
+      .getMany();
 
-    return Promise.all(chatRooms.map(async (chatRoom) => {
-      const recentMessage = chatRoom.messages.length
-        ? chatRoom.messages.reduce((latest, message) => 
-            message.createAt > latest.createAt ? message : latest, chatRoom.messages[0])
-        : null;
-  
-      return {
-        id: chatRoom.id,
-        bookId: chatRoom.book.id,
-        sellerId: chatRoom.seller.id,
-        sellerName: chatRoom.seller.name,
-        buyerId: chatRoom.buyer.id,
-        buyerName: chatRoom.buyer.name,
-        updatedAt: recentMessage ? recentMessage.createAt.toLocaleString() : chatRoom.updateAt.toLocaleString(),
-        recentMessage: recentMessage ? recentMessage.content : '',
-      };
-    }));
+    return Promise.all(
+      chatRooms.map(async (chatRoom) => {
+        const recentMessage = chatRoom.messages.length
+          ? chatRoom.messages.reduce(
+              (latest, message) =>
+                message.createAt > latest.createAt ? message : latest,
+              chatRoom.messages[0],
+            )
+          : null;
+
+        return {
+          id: chatRoom.id,
+          sellerId: chatRoom.seller.id,
+          sellerName: chatRoom.seller.name,
+          buyerId: chatRoom.buyer.id,
+          buyerName: chatRoom.buyer.name,
+          bookId: chatRoom.book.id,
+          bookTitle: chatRoom.book.title,
+          updatedAt: recentMessage
+            ? recentMessage.createAt.toLocaleString()
+            : chatRoom.updateAt.toLocaleString(),
+          recentMessage: recentMessage ? recentMessage.content : '',
+        };
+      }),
+    );
   }
 }

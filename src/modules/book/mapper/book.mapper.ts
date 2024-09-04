@@ -14,7 +14,7 @@ export class BookMapper {
     book.description = dto.description;
     book.type = dto.type;
     book.condition = dto.condition;
-    book.kakaoLink = dto.kakaoLink;
+    // book.kakaoLink = dto.kakaoLink;
     book.salesStatus = dto.salesStatus;
     return book;
   }
@@ -30,7 +30,7 @@ export class BookMapper {
       description: book.description,
       type: book.type,
       condition: book.condition,
-      kakaoLink: book.kakaoLink,
+      // kakaoLink: book.kakaoLink,
       salesStatus: book.salesStatus,
       createAt: book.createAt,
       updateAt: book.updateAt,

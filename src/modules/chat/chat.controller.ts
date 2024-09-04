@@ -1,8 +1,7 @@
-import { Controller, Get, Query, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Query, NotFoundException, Req } from '@nestjs/common';
 import { ChatService } from './chat.service';
-import { ChatRoom } from './entity/chat-room.entity';
 import { ChatGateway } from './chat.gateway';
-
+import { Request } from 'express';
 
 @Controller('chat')
 export class ChatController {
@@ -13,7 +12,13 @@ export class ChatController {
 
   //채팅 목록 반환
   @Get('list')
-  async getMyChatRooms(@Query('userId') userId: number) {
+  async getMyChatRooms(@Req() req: Request) {
+    const userId = req.session.userId;
+
+    if (!userId) {
+      throw new NotFoundException('User not found in session');
+    }
+
     return this.chatService.getChatRoomsForUser(userId);
   }
 
@@ -24,7 +29,7 @@ export class ChatController {
     @Query('buyerId') buyerId: number,
     @Query('bookId') bookId: number,
     @Query('socketId') socketId?: string,
-  ): Promise<ChatRoom> {
+  ) {
     if (!sellerId || !buyerId || !bookId) {
       throw new NotFoundException('Missing required query parameters');
     }
@@ -37,11 +42,19 @@ export class ChatController {
       throw new NotFoundException('Invalid seller, buyer, or book ID');
     }
 
-    const chatRoom = await this.chatService.findOrCreateChatRoom(sellerId, buyerId, bookId);
+    const chatRoom = await this.chatService.findOrCreateChatRoom(
+      sellerId,
+      buyerId,
+      bookId,
+    );
 
     //웹소켓
-    if (socketId) {
-      this.chatGateway.server.to(socketId).emit('roomJoined', chatRoom.id);
+    if (chatRoom && socketId) {
+      const chatRoomId = chatRoom.chatRoom.id;
+      this.chatGateway.server.to(socketId).emit('roomJoined', chatRoomId);
+      this.chatGateway.server.sockets.sockets
+        .get(socketId)
+        ?.join(`room-${chatRoomId}`);
     }
 
     return chatRoom;
