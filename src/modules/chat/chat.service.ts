@@ -19,9 +19,15 @@ export class ChatService {
     private bookRepository: Repository<Book>,
   ) {}
 
-  async findUserById(userId: number): Promise<User | undefined> {
-    return this.userRepository.findOneBy({ id: userId });
+  async findUserById(userId: number): Promise<Partial<User> | undefined> {
+    const user = await this.userRepository.findOneBy({ id: userId });
+    if (user) {
+      const { password, ...userWithoutPassword } = user;
+      return userWithoutPassword; // 비밀번호 제외
+    }
+    return undefined;
   }
+  
 
   async findBookById(bookId: number): Promise<Book | undefined> {
     return this.bookRepository.findOneBy({ id: bookId });
@@ -102,33 +108,36 @@ export class ChatService {
       .orderBy('chatRoom.updateAt', 'DESC')
       .getMany();
 
-    return Promise.all(
-      chatRooms.map(async (chatRoom) => {
-        const recentMessage = chatRoom.messages.length
-          ? chatRoom.messages.reduce(
-              (latest, message) =>
-                message.createAt > latest.createAt ? message : latest,
-              chatRoom.messages[0],
-            )
-          : null;
-
-        return {
-          id: chatRoom.id,
-          sellerId: chatRoom.seller.id,
-          sellerName: chatRoom.seller.name,
-          buyerId: chatRoom.buyer.id,
-          buyerName: chatRoom.buyer.name,
-          bookId: chatRoom.book.id,
-          bookTitle: chatRoom.book.title,
-          bookImage: chatRoom.book.imageUrlsArray.length > 0 
-               ? chatRoom.book.imageUrlsArray[0] 
-               : '',
-          updatedAt: recentMessage
-            ? recentMessage.createAt.toLocaleString()
-            : chatRoom.updateAt.toLocaleString(),
-          recentMessage: recentMessage ? recentMessage.content : '',
-        };
-      }),
-    );
+      return Promise.all(
+        chatRooms.map(async (chatRoom) => {
+          const { password: sellerPassword, ...seller } = chatRoom.seller;
+          const { password: buyerPassword, ...buyer } = chatRoom.buyer;
+      
+          const recentMessage = chatRoom.messages.length
+            ? chatRoom.messages.reduce(
+                (latest, message) =>
+                  message.createAt > latest.createAt ? message : latest,
+                chatRoom.messages[0],
+              )
+            : null;
+      
+          return {
+            id: chatRoom.id,
+            sellerId: seller.id,
+            sellerName: seller.name,
+            buyerId: buyer.id,
+            buyerName: buyer.name,
+            bookId: chatRoom.book.id,
+            bookTitle: chatRoom.book.title,
+            bookImage: chatRoom.book.imageUrlsArray.length > 0 
+                  ? chatRoom.book.imageUrlsArray[0] 
+                  : '',
+            updatedAt: recentMessage
+              ? recentMessage.createAt.toLocaleString()
+              : chatRoom.updateAt.toLocaleString(),
+            recentMessage: recentMessage ? recentMessage.content : '',
+          };
+        }),
+      );      
   }
 }
