@@ -120,6 +120,9 @@ export class ChatService {
           buyerName: chatRoom.buyer.name,
           bookId: chatRoom.book.id,
           bookTitle: chatRoom.book.title,
+          bookImage: chatRoom.book.imageUrlsArray.length > 0 
+               ? chatRoom.book.imageUrlsArray[0] 
+               : '',
           updatedAt: recentMessage
             ? recentMessage.createAt.toLocaleString()
             : chatRoom.updateAt.toLocaleString(),
