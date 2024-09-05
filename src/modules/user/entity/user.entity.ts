@@ -10,7 +10,7 @@ export class User extends BaseEntity {
   @Column({ unique: true, comment: '사용자 이메일' })
   email: string;
 
-  @Column({ comment: '사용자 비밀번호' })
+  @Column({ comment: '사용자 비밀번호', select: false })
   @Exclude()
   password: string;
 
