@@ -1,6 +1,7 @@
 import { Controller, Get, Query, NotFoundException, Req } from '@nestjs/common';
 import { ChatService } from 'modules/chat/chat.service';
 import { ChatGateway } from 'modules/chat/chat.gateway';
+import { ChatMapper } from 'modules/chat/mapper/chat.mapper';
 import { Request } from 'express';
 
 @Controller('chat')
@@ -48,6 +49,11 @@ export class ChatController {
       bookId,
     );
 
+    const chatRoomDto = ChatMapper.mapChatRoomEntityToDto2(
+      chatRoom.chatRoom,
+      chatRoom.messages,
+    );
+
     //웹소켓
     if (chatRoom && socketId) {
       const chatRoomId = chatRoom.chatRoom.id;
@@ -57,6 +63,6 @@ export class ChatController {
         ?.join(`room-${chatRoomId}`);
     }
 
-    return chatRoom;
+    return chatRoomDto;
   }
 }

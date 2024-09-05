@@ -4,7 +4,8 @@ import { ChatRoom } from 'modules/chat/entity/chat-room.entity';
 import { Message } from 'modules/chat/entity/chat.entity';
 import { User } from 'modules/user/entity/user.entity';
 import { Book } from 'modules/book/entity/book.entity';
-
+import { ChatRoomDto } from 'modules/chat/dto/chat-room.dto';
+import { plainToClass } from 'class-transformer';
 export class ChatMapper {
   static async mapChatRoomDtoToEntity(
     dto: CreateChatRoomDto,
@@ -55,5 +56,19 @@ export class ChatMapper {
       content: entity.content,
       personId: entity.person.id,
     };
+  }
+
+  static mapChatRoomEntityToDto2(
+    chatRoom: ChatRoom,
+    messages: Message[],
+  ): ChatRoomDto {
+    return plainToClass(ChatRoomDto, {
+      id: chatRoom.id,
+      book: chatRoom.book,
+      seller: chatRoom.seller,
+      buyer: chatRoom.buyer,
+      recentMessageContent: messages,
+      updatedAt: chatRoom.updateAt,
+    });
   }
 }
