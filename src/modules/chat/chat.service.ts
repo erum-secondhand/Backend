@@ -53,12 +53,16 @@ export class ChatService {
 
     if (!chatRoom) {
       chatRoom = this.chatRoomRepository.create({
-        seller: seller,
-        buyer: buyer,
+        seller: { ...seller, password: undefined }, // 비밀번호 제거
+        buyer: { ...buyer, password: undefined },  // 비밀번호 제거
         book: book,
       });
       await this.chatRoomRepository.save(chatRoom);
     }
+    
+    // 이미 존재하는 경우에도 비밀번호를 제거
+    chatRoom.seller.password = undefined;
+    chatRoom.buyer.password = undefined;
 
     const messages = await this.messageRepository.find({
       where: { chatRoom: { id: chatRoom.id } },
